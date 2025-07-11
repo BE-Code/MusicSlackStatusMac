@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Slack Status</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .container { background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 600px; }
+        .container-sm { max-width: 450px; }
+        h1 { margin-bottom: 0.5rem; color: #1d1c1d; }
+        h2 { margin-top: 0; margin-bottom: 1.5rem; color: #616061; font-weight: 400; font-size: 1.1rem; }
+        button, .button { padding: 0.75rem 1.5rem; border-radius: 4px; border: none; background-color: #007a5a; color: white; font-size: 1rem; cursor: pointer; transition: background-color 0.2s; text-decoration: none; display: inline-block; }
+        button:hover, .button:hover { background-color: #148567; }
+        .button-slack { background-color: #4A154B; }
+        .button-slack:hover { background-color: #612d62; }
+        .response { margin-top: 1.5rem; font-size: 1rem; color: #1d1c1d; }
+        .hidden { display: none; }
+        .setup-instructions { text-align: left; margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1.5rem; }
+        .setup-instructions h3 { margin-top: 0; }
+        .setup-instructions ol { padding-left: 1.5rem; }
+        .setup-instructions li { margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+        .form-group input { width: 100%; padding: 0.75rem; border-radius: 4px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box; }
+        code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+    </style>
+</head>
+<body>
+    <div id="main-container" class="container">
+        <!-- Loader -->
+        <div id="loader">
+            <p>Loading configuration...</p>
+        </div>
+
+        <!-- App Setup Instructions -->
+        <div id="setup-container" class="hidden">
+            <h1>Initial Setup</h1>
+            <h2>Let's configure your Slack App credentials.</h2>
+            <form id="setupForm">
+                <div class="form-group">
+                    <label for="clientId">Client ID</label>
+                    <input type="text" id="clientId" name="clientId" required>
+                </div>
+                <div class="form-group">
+                    <label for="clientSecret">Client Secret</label>
+                    <input type="password" id="clientSecret" name="clientSecret" required>
+                </div>
+                <button type="submit">Save Credentials & Restart</button>
+            </form>
+            <div id="setup-response" class="response"></div>
+            <div class="setup-instructions">
+                <h3>How to get your credentials:</h3>
+                <ol>
+                    <li>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select <strong>"Create New App"</strong> -> <strong>"From scratch"</strong>.</li>
+                    <li>Give it an App Name (e.g., "Local Status Setter") and choose your workspace.</li>
+                    <li>On the "Basic Information" page, find the <strong>App Credentials</strong> section. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> into the fields above.</li>
+                    <li>In the left sidebar, go to <strong>"OAuth & Permissions"</strong>. Under <strong>Redirect URLs</strong>, add this exact URL: <code>http://localhost:5001/oauth/redirect</code>. Then click <strong>Save URLs</strong>.</li>
+                    <li>You're done with the Slack website! Come back here, paste your credentials, and click save.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Authentication Step -->
+        <div id="auth-container" class="container-sm hidden">
+            <h1>Connect to Slack</h1>
+            <h2>Your credentials are saved. Now, connect your account.</h2>
+            <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
+        </div>
+
+        <!-- Main Status Setter -->
+        <div id="status-container" class="container-sm hidden">
+            <h1>Set Your Slack Status</h1>
+            <h2>Enter a status and it will appear in Slack.</h2>
+            <form id="statusForm">
+                <input type="text" id="statusText" name="status" placeholder="What's your status?" style="width: 70%;">
+                <button type="submit">Set Status</button>
+            </form>
+            <div class="response" id="response"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loader = document.getElementById('loader');
+            const setupContainer = document.getElementById('setup-container');
+            const authContainer = document.getElementById('auth-container');
+            const statusContainer = document.getElementById('status-container');
+            const mainContainer = document.getElementById('main-container');
+
+            try {
+                const res = await fetch('/api/config/status');
+                const data = await res.json();
+                
+                loader.classList.add('hidden');
+                mainContainer.classList.add('container-sm');
+
+
+                if (data.status === 'SETUP_NEEDED') {
+                    mainContainer.classList.remove('container-sm');
+                    setupContainer.classList.remove('hidden');
+                } else if (data.status === 'AUTH_NEEDED') {
+                    const authUrlRes = await fetch('/api/auth/url');
+                    const { url } = await authUrlRes.json();
+                    document.getElementById('slack-auth-button').href = url;
+                    authContainer.classList.remove('hidden');
+                } else if (data.status === 'READY') {
+                    statusContainer.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                loader.innerHTML = '<p>Could not connect to the server. Is it running? Refresh the page to try again.</p>';
+            }
+        });
+
+        document.getElementById('setupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const clientId = document.getElementById('clientId').value;
+            const clientSecret = document.getElementById('clientSecret').value;
+            const responseDiv = document.getElementById('setup-response');
+            
+            responseDiv.textContent = 'Saving...';
+
+            const res = await fetch('/api/config/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clientId, clientSecret })
+            });
+
+            const result = await res.json();
+            if (res.ok) {
+                responseDiv.textContent = '✅ Success! Please restart the server by stopping it (Ctrl+C) and running "yarn dev" again. Then, refresh this page.';
+                responseDiv.style.color = '#007a5a';
+            } else {
+                responseDiv.textContent = `Error: ${result.error}`;
+                responseDiv.style.color = '#d92626';
+            }
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const statusText = document.getElementById('statusText').value;
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = 'Setting status...';
+
+            try {
+                const response = await fetch('/set-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: statusText })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    responseDiv.textContent = 'Status updated successfully!';
+                } else {
+                    responseDiv.textContent = 'Error: ' + result.error;
+                }
+            } catch (error) {
+                responseDiv.textContent = 'An unexpected error occurred.';
+            }
+        });
+    </script>
+</body>
+</html>
