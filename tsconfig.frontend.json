@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./public/dist",
+    "lib": ["dom", "es2015"]
+  },
+  "include": [
+    "src/public/app.ts"
+  ]
+}

@@ -1,27 +1,28 @@
 {
-  "name": "MusicStatusSlackMac",
-  "packageManager": "yarn@4.6.0",
-  "main": "index.js",
+  "name": "slack-status-updater",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
   "scripts": {
+    "build:backend": "tsc",
+    "build:frontend": "tsc --project tsconfig.frontend.json",
+    "build": "yarn build:backend && yarn build:frontend",
     "start": "node dist/index.js",
-    "build": "tsc",
-    "predev": "node generate-cert.js",
-    "dev": "node generate-cert.js && ts-node-dev --respawn --transpile-only ./src/index.ts"
+    "dev": "concurrently \"yarn build:backend --watch\" \"yarn build:frontend --watch\" \"nodemon dist/index.js\""
   },
   "dependencies": {
-    "axios": "^1.10.0",
+    "axios": "^1.7.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "typescript": "^5.5.3"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/dotenv": "^8.2.3",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.13",
-    "selfsigned": "^2.4.1",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3"
-  }
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4"
+  },
+  "packageManager": "yarn@4.6.0+sha224.acd0786f07ffc6c933940eb65fc1d627131ddf5455bddcc295dc90fd"
 }
