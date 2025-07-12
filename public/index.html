@@ -105,7 +105,9 @@
       <h1>Set Your Slack Status</h1>
       <h2>Enter a status and it will appear in Slack.</h2>
       <form id="statusForm">
-        <input type="text" id="statusText" name="status" placeholder="What's your status?" style="width: 70%;">
+        <div class="form-group">
+          <input type="text" id="statusText" name="status" placeholder="What's your status?">
+        </div>
         <button type="submit">Set Status</button>
       </form>
       <div class="response" id="response"></div>
