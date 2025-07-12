@@ -53,7 +53,7 @@ app.get('/api/auth/url', (req: Request, res: Response) => {
     if (!SLACK_CLIENT_ID) {
         return res.status(500).json({ error: 'SLACK_CLIENT_ID is not configured on the server.' });
     }
-    const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=users.profile:write&user_scope=&redirect_uri=${SLACK_REDIRECT_URI}`;
+    const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&user_scope=users.profile:write&redirect_uri=${SLACK_REDIRECT_URI}`;
     res.json({ url: authUrl });
 });
 
