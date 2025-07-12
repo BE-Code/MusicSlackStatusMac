@@ -32,10 +32,10 @@ button,
 }
 
 .button-slack {
-  background-image: linear-gradient(to top, #3e123f, #5a1a5b);
+  background-color: #4A154B;
 }
 .button-slack:hover {
-  background-image: linear-gradient(to top, #4A154B, #6b2d6c);
+  background-color: #612d62;
 }
 
 .response {
