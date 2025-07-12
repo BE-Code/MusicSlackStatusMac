@@ -1,144 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Slack Status</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Slack Status</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div id="main-container" class="container">
-        <!-- Loader -->
-        <div id="loader">
-            <p>Loading configuration...</p>
-        </div>
-
-        <!-- App Setup Instructions -->
-        <div id="setup-container" class="hidden">
-            <h1>Initial Setup</h1>
-            <h2>Let's configure your Slack App credentials.</h2>
-            <div class="setup-instructions">
-                <ol>
-                    <li>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select <strong>"Create an App"</strong> -> <strong>"From scratch"</strong>.</li>
-                    <li>Type <code>Music Status Slack Mac</code> for the App Name and choose your workspace.</li>
-                    <li>On the "Basic Information" page, find the <strong>App Credentials</strong> section. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> into the fields below.</li>
-                    <li>In the left sidebar, go to <strong>"OAuth & Permissions"</strong>. Under <strong>Redirect URLs</strong>, add this exact URL: <code>https://localhost:5001/oauth/redirect</code>. Then click <strong>Save URLs</strong>.</li>
-                    <li>Still on the <strong>"OAuth & Permissions"</strong> page, scroll down to the <strong>"Scopes"</strong> section. Under <strong>"User Token Scopes"</strong>, click <strong>"Add an OAuth Scope"</strong> and add <code>users.profile:write</code>.</li>
-                    <li>You're done with the Slack website! Come back here, paste your credentials, and click save. You can close the Slack website now.</li>
-                </ol>
-            </div>
-            <form id="setupForm">
-                <div class="form-group">
-                    <label for="clientId">Client ID</label>
-                    <input type="text" id="clientId" name="clientId" required>
-                </div>
-                <div class="form-group">
-                    <label for="clientSecret">Client Secret</label>
-                    <input type="password" id="clientSecret" name="clientSecret" required>
-                </div>
-                <button type="submit">Save Credentials & Restart</button>
-            </form>
-            <div id="setup-response" class="response"></div>
-        </div>
-
-        <!-- Authentication Step -->
-        <div id="auth-container" class="container-sm hidden">
-            <h1>Connect to Slack</h1>
-            <h2>Your credentials are saved. Now, connect your account.</h2>
-            <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
-        </div>
-
-        <!-- Main Status Setter -->
-        <div id="status-container" class="container-sm hidden">
-            <h1>Set Your Slack Status</h1>
-            <h2>Enter a status and it will appear in Slack.</h2>
-            <form id="statusForm">
-                <input type="text" id="statusText" name="status" placeholder="What's your status?" style="width: 70%;">
-                <button type="submit">Set Status</button>
-            </form>
-            <div class="response" id="response"></div>
-        </div>
+  <div id="main-container" class="container">
+    <!-- Loader -->
+    <div id="loader">
+      <p>Loading configuration...</p>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const loader = document.getElementById('loader');
-            const setupContainer = document.getElementById('setup-container');
-            const authContainer = document.getElementById('auth-container');
-            const statusContainer = document.getElementById('status-container');
-            const mainContainer = document.getElementById('main-container');
+    <!-- App Setup Instructions -->
+    <div id="setup-container" class="hidden">
+      <h1>Initial Setup</h1>
+      <h2>Let's configure your Slack App credentials.</h2>
+      <div class="setup-instructions">
+        <ol>
+          <li>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select
+            <strong>"Create an App"</strong> -> <strong>"From scratch"</strong>.</li>
+          <li>Type <code>Music Status Slack Mac</code> for the App Name and choose your workspace.</li>
+          <li>On the "Basic Information" page, find the <strong>App Credentials</strong> section. Copy the
+            <strong>Client ID</strong> and <strong>Client Secret</strong> into the fields below.</li>
+          <li>In the left sidebar, go to <strong>"OAuth & Permissions"</strong>. Under <strong>Redirect URLs</strong>,
+            add this exact URL: <code>https://localhost:5001/oauth/redirect</code>. Then click <strong>Save
+              URLs</strong>.</li>
+          <li>Still on the <strong>"OAuth & Permissions"</strong> page, scroll down to the <strong>"Scopes"</strong>
+            section. Under <strong>"User Token Scopes"</strong>, click <strong>"Add an OAuth Scope"</strong> and add
+            <code>users.profile:write</code>.</li>
+          <li>You're done with the Slack website! Come back here, paste your credentials, and click save. You can close
+            the Slack website now.</li>
+        </ol>
+      </div>
+      <form id="setupForm">
+        <div class="form-group">
+          <label for="clientId">Client ID</label>
+          <input type="text" id="clientId" name="clientId" required>
+        </div>
+        <div class="form-group">
+          <label for="clientSecret">Client Secret</label>
+          <input type="password" id="clientSecret" name="clientSecret" required>
+        </div>
+        <button type="submit">Save Credentials & Restart</button>
+      </form>
+      <div id="setup-response" class="response"></div>
+    </div>
 
-            try {
-                const res = await fetch('/api/config/status');
-                const data = await res.json();
+    <!-- Authentication Step -->
+    <div id="auth-container" class="container-sm hidden">
+      <h1>Connect to Slack</h1>
+      <h2>Your credentials are saved. Now, connect your account.</h2>
+      <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
+    </div>
 
-                loader.classList.add('hidden');
-                mainContainer.classList.add('container-sm');
+    <!-- Main Status Setter -->
+    <div id="status-container" class="container-sm hidden">
+      <h1>Set Your Slack Status</h1>
+      <h2>Enter a status and it will appear in Slack.</h2>
+      <form id="statusForm">
+        <input type="text" id="statusText" name="status" placeholder="What's your status?" style="width: 70%;">
+        <button type="submit">Set Status</button>
+      </form>
+      <div class="response" id="response"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const loader = document.getElementById('loader');
+      const setupContainer = document.getElementById('setup-container');
+      const authContainer = document.getElementById('auth-container');
+      const statusContainer = document.getElementById('status-container');
+      const mainContainer = document.getElementById('main-container');
+
+      try {
+        const res = await fetch('/api/config/status');
+        const data = await res.json();
+
+        loader.classList.add('hidden');
+        mainContainer.classList.add('container-sm');
 
 
-                if (data.status === 'SETUP_NEEDED') {
-                    mainContainer.classList.remove('container-sm');
-                    setupContainer.classList.remove('hidden');
-                } else if (data.status === 'AUTH_NEEDED') {
-                    const authUrlRes = await fetch('/api/auth/url');
-                    const { url } = await authUrlRes.json();
-                    document.getElementById('slack-auth-button').href = url;
-                    authContainer.classList.remove('hidden');
-                } else if (data.status === 'READY') {
-                    statusContainer.classList.remove('hidden');
-                }
+        if (data.status === 'SETUP_NEEDED') {
+          mainContainer.classList.remove('container-sm');
+          setupContainer.classList.remove('hidden');
+        } else if (data.status === 'AUTH_NEEDED') {
+          const authUrlRes = await fetch('/api/auth/url');
+          const { url } = await authUrlRes.json();
+          document.getElementById('slack-auth-button').href = url;
+          authContainer.classList.remove('hidden');
+        } else if (data.status === 'READY') {
+          statusContainer.classList.remove('hidden');
+        }
 
-            } catch (error) {
-                loader.innerHTML = '<p>Could not connect to the server. Is it running? Refresh the page to try again.</p>';
-            }
+      } catch (error) {
+        loader.innerHTML = '<p>Could not connect to the server. Is it running? Refresh the page to try again.</p>';
+      }
+    });
+
+    document.getElementById('setupForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const clientId = document.getElementById('clientId').value;
+      const clientSecret = document.getElementById('clientSecret').value;
+      const responseDiv = document.getElementById('setup-response');
+
+      responseDiv.textContent = 'Saving...';
+
+      const res = await fetch('/api/config/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, clientSecret })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        responseDiv.textContent = '✅ Success! Please restart the server by stopping it (Ctrl+C) and running "yarn dev" again. Then, refresh this page.';
+        responseDiv.style.color = '#007a5a';
+      } else {
+        responseDiv.textContent = `Error: ${result.error}`;
+        responseDiv.style.color = '#d92626';
+      }
+    });
+
+    document.getElementById('statusForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const statusText = document.getElementById('statusText').value;
+      const responseDiv = document.getElementById('response');
+      responseDiv.textContent = 'Setting status...';
+
+      try {
+        const response = await fetch('/set-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: statusText })
         });
-
-        document.getElementById('setupForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const clientId = document.getElementById('clientId').value;
-            const clientSecret = document.getElementById('clientSecret').value;
-            const responseDiv = document.getElementById('setup-response');
-
-            responseDiv.textContent = 'Saving...';
-
-            const res = await fetch('/api/config/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clientId, clientSecret })
-            });
-
-            const result = await res.json();
-            if (res.ok) {
-                responseDiv.textContent = '✅ Success! Please restart the server by stopping it (Ctrl+C) and running "yarn dev" again. Then, refresh this page.';
-                responseDiv.style.color = '#007a5a';
-            } else {
-                responseDiv.textContent = `Error: ${result.error}`;
-                responseDiv.style.color = '#d92626';
-            }
-        });
-
-        document.getElementById('statusForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const statusText = document.getElementById('statusText').value;
-            const responseDiv = document.getElementById('response');
-            responseDiv.textContent = 'Setting status...';
-
-            try {
-                const response = await fetch('/set-status', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: statusText })
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    responseDiv.textContent = 'Status updated successfully!';
-                } else {
-                    responseDiv.textContent = 'Error: ' + result.error;
-                }
-            } catch (error) {
-                responseDiv.textContent = 'An unexpected error occurred.';
-            }
-        });
-    </script>
+        const result = await response.json();
+        if (response.ok) {
+          responseDiv.textContent = 'Status updated successfully!';
+        } else {
+          responseDiv.textContent = 'Error: ' + result.error;
+        }
+      } catch (error) {
+        responseDiv.textContent = 'An unexpected error occurred.';
+      }
+    });
+  </script>
 </body>
+
 </html>
