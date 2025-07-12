@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
   const setupContainer = document.getElementById('setup-container');
-  const authContainer = document.getElementById('auth-container');
   const statusContainer = document.getElementById('status-container');
   const mainContainer = document.getElementById('main-container');
 
-  if (!loader || !setupContainer || !authContainer || !statusContainer || !mainContainer) {
+  if (!loader || !setupContainer || !statusContainer || !mainContainer) {
     console.error('Required elements not found in the DOM.');
     return;
   }
@@ -31,7 +30,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (slackAuthButton) {
         slackAuthButton.href = url;
       }
-      authContainer.classList.remove('hidden');
+      mainContainer.classList.remove('container-sm');
+      setupContainer.classList.remove('hidden');
+      currentStep = 5; // Go to the last step (authentication)
+      showStep(currentStep);
     } else if (data.status === 'READY') {
       statusContainer.classList.remove('hidden');
     }
@@ -55,6 +57,15 @@ const prevButtons = document.querySelectorAll('.prev-step');
 let currentStep = 0;
 
 function showStep(stepIndex: number) {
+  const mainTitle = document.querySelector('#setup-container > h1') as HTMLElement | null;
+  const stepTitle = document.getElementById('setup-step-title');
+
+  if (mainTitle && stepTitle) {
+    const isLastStep = stepIndex === setupSteps.length - 1;
+    mainTitle.classList.toggle('hidden', isLastStep);
+    stepTitle.classList.toggle('hidden', isLastStep);
+  }
+
   setupSteps.forEach((step, index) => {
     step.classList.toggle('hidden', index !== stepIndex);
   });

@@ -74,20 +74,31 @@
         <!-- Step 5: Scopes -->
         <div id="step-5" class="setup-step hidden">
           <p>Still on the <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> page, scroll down to the <strong>"Scopes"</strong> section. Under <strong>"User Token Scopes"</strong>, click <strong>"Add an OAuth Scope"</strong> and add <code>users.profile:write</code>.</p>
-          <p>You're done with the Slack website! You can close it now. Once you save your credentials and complete all the steps, restart the app server and refresh this page.</p>
+          <p>You're done with the Slack website! You can close it now. Click next to connect your account.</p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
+            <button class="next-step">Next &rarr;</button>
           </div>
+        </div>
+
+        <!-- Step 6: Authentication -->
+        <div id="step-6" class="setup-step hidden">
+            <h1>Connect to Slack</h1>
+            <h2>Your credentials are saved. Now, connect your account.</h2>
+            <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
+            <div class="navigation-buttons">
+                <button class="prev-step">&larr; Previous</button>
+            </div>
         </div>
       </div>
     </div>
 
-    <!-- Authentication Step -->
-    <div id="auth-container" class="container-sm hidden">
+    <!-- Authentication Step - This will be removed -->
+    <!-- <div id="auth-container" class="container-sm hidden">
       <h1>Connect to Slack</h1>
       <h2>Your credentials are saved. Now, connect your account.</h2>
       <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
-    </div>
+    </div> -->
 
     <!-- Main Status Setter -->
     <div id="status-container" class="container-sm hidden">
