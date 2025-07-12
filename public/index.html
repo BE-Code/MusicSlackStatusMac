@@ -16,7 +16,7 @@
         .button-slack:hover { background-color: #612d62; }
         .response { margin-top: 1.5rem; font-size: 1rem; color: #1d1c1d; }
         .hidden { display: none; }
-        .setup-instructions { text-align: left; margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1.5rem; }
+        .setup-instructions { text-align: left; margin-bottom: 2rem; }
         .setup-instructions h3 { margin-top: 0; }
         .setup-instructions ol { padding-left: 1.5rem; }
         .setup-instructions li { margin-bottom: 1rem; }
@@ -37,6 +37,15 @@
         <div id="setup-container" class="hidden">
             <h1>Initial Setup</h1>
             <h2>Let's configure your Slack App credentials.</h2>
+            <div class="setup-instructions">
+                <ol>
+                    <li>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select <strong>"Create an App"</strong> -> <strong>"From scratch"</strong>.</li>
+                    <li>Type <code>Music Status Slack Mac</code> for the App Name and choose your workspace.</li>
+                    <li>On the "Basic Information" page, find the <strong>App Credentials</strong> section. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> into the fields below.</li>
+                    <li>In the left sidebar, go to <strong>"OAuth & Permissions"</strong>. Under <strong>Redirect URLs</strong>, add this exact URL: <code>http://localhost:5001/oauth/redirect</code>. Then click <strong>Save URLs</strong>.</li>
+                    <li>You're done with the Slack website! Come back here, paste your credentials, and click save. You can close the Slack website now.</li>
+                </ol>
+            </div>
             <form id="setupForm">
                 <div class="form-group">
                     <label for="clientId">Client ID</label>
@@ -49,16 +58,6 @@
                 <button type="submit">Save Credentials & Restart</button>
             </form>
             <div id="setup-response" class="response"></div>
-            <div class="setup-instructions">
-                <h3>How to get your credentials:</h3>
-                <ol>
-                    <li>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select <strong>"Create New App"</strong> -> <strong>"From scratch"</strong>.</li>
-                    <li>Give it an App Name (e.g., "Local Status Setter") and choose your workspace.</li>
-                    <li>On the "Basic Information" page, find the <strong>App Credentials</strong> section. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> into the fields above.</li>
-                    <li>In the left sidebar, go to <strong>"OAuth & Permissions"</strong>. Under <strong>Redirect URLs</strong>, add this exact URL: <code>http://localhost:5001/oauth/redirect</code>. Then click <strong>Save URLs</strong>.</li>
-                    <li>You're done with the Slack website! Come back here, paste your credentials, and click save.</li>
-                </ol>
-            </div>
         </div>
 
         <!-- Authentication Step -->
