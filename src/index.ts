@@ -112,13 +112,14 @@ app.post('/set-status', async (req: Request, res: Response) => {
   }
 
   try {
+    const expiration = Math.floor(Date.now() / 1000) + 10 * 60; // 30 minutes from now
     const response = await axios.post(
       'https://slack.com/api/users.profile.set',
       {
         profile: {
           status_text: status,
-          status_emoji: '',
-          status_expiration: 0,
+          status_emoji: ':headphones:',
+          status_expiration: expiration,
         },
       },
       {
