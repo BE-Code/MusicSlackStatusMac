@@ -22,4 +22,9 @@ button:hover, .button:hover { background-color: #148567; }
 code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
 .setup-step p {
   line-height: 1.6;
-} 
+}
+
+#slack-auth-button {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
