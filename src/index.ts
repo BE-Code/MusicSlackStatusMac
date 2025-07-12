@@ -11,8 +11,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5001;
 
-const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
-const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
+let SLACK_APP_ID = process.env.SLACK_APP_ID;
+let SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
+let SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = `https://localhost:${port}/oauth/redirect`;
 
 let userSlackToken = process.env.SLACK_API_TOKEN;
@@ -22,27 +23,33 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/api/config/status', (req: Request, res: Response) => {
-  if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
+  if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET || !SLACK_APP_ID) {
     return res.json({ status: 'SETUP_NEEDED' });
   }
   if (!userSlackToken) {
-    return res.json({ status: 'AUTH_NEEDED' });
+    return res.json({ status: 'AUTH_NEEDED', appId: SLACK_APP_ID });
   }
-  res.json({ status: 'READY' });
+  res.json({ status: 'READY', appId: SLACK_APP_ID });
 });
 
 app.post('/api/config/save', (req: Request, res: Response) => {
-  const { clientId, clientSecret } = req.body;
+  const { appId, clientId, clientSecret } = req.body;
 
-  if (!clientId || !clientSecret) {
-    return res.status(400).json({ error: 'Client ID and Client Secret are required.' });
+  if (!appId || !clientId || !clientSecret) {
+    return res.status(400).json({ error: 'App ID, Client ID, and Client Secret are required.' });
   }
 
-  const envContent = `SLACK_CLIENT_ID=${clientId}\nSLACK_CLIENT_SECRET=${clientSecret}\n`;
+  const envContent = `SLACK_APP_ID=${appId}\nSLACK_CLIENT_ID=${clientId}\nSLACK_CLIENT_SECRET=${clientSecret}\n`;
 
   try {
     fs.writeFileSync('.env', envContent);
-    res.status(200).json({ message: 'Configuration saved. Please restart the server.' });
+
+    // Update in-memory variables
+    SLACK_APP_ID = appId;
+    SLACK_CLIENT_ID = clientId;
+    SLACK_CLIENT_SECRET = clientSecret;
+
+    res.status(200).json({ message: 'Configuration saved.', appId });
   } catch (error) {
     console.error('Error saving .env file:', error);
     res.status(500).json({ error: 'Failed to save configuration.' });

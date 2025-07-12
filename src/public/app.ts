@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const res = await fetch('/api/config/status');
     const data = await res.json();
 
+    if (data.appId) {
+      updateOauthLink(data.appId);
+    }
+
     loader.classList.add('hidden');
     mainContainer.classList.add('container-sm');
 
@@ -37,16 +41,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+function updateOauthLink(appId: string) {
+  const oauthLinks = document.querySelectorAll('.oauth-dynamic-link') as NodeListOf<HTMLAnchorElement>;
+  oauthLinks.forEach(link => {
+    link.href = `https://api.slack.com/apps/${appId}/oauth`;
+  });
+}
+
+// Setup Wizard Logic
+const setupSteps = document.querySelectorAll('.setup-step');
+const nextButtons = document.querySelectorAll('.next-step');
+const prevButtons = document.querySelectorAll('.prev-step');
+let currentStep = 0;
+
+function showStep(stepIndex: number) {
+  setupSteps.forEach((step, index) => {
+    step.classList.toggle('hidden', index !== stepIndex);
+  });
+}
+
+nextButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    if (currentStep < setupSteps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    }
+  });
+});
+
+prevButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+});
+
 document.getElementById('setupForm')?.addEventListener('submit', async function (event) {
   event.preventDefault();
+  const appIdInput = document.getElementById('appId') as HTMLInputElement;
   const clientIdInput = document.getElementById('clientId') as HTMLInputElement;
   const clientSecretInput = document.getElementById('clientSecret') as HTMLInputElement;
   const responseDiv = document.getElementById('setup-response');
 
-  if (!clientIdInput || !clientSecretInput || !responseDiv) {
+  if (!appIdInput || !clientIdInput || !clientSecretInput || !responseDiv) {
     return;
   }
 
+  const appId = appIdInput.value;
   const clientId = clientIdInput.value;
   const clientSecret = clientSecretInput.value;
 
@@ -55,13 +98,17 @@ document.getElementById('setupForm')?.addEventListener('submit', async function 
   const res = await fetch('/api/config/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientId, clientSecret })
+    body: JSON.stringify({ appId, clientId, clientSecret })
   });
 
   const result = await res.json();
   if (res.ok) {
-    responseDiv.textContent = '✅ Success! Please restart the server by stopping it (Ctrl+C) and running "yarn dev" again. Then, refresh this page.';
-    responseDiv.style.color = '#007a5a';
+    updateOauthLink(result.appId);
+    responseDiv.textContent = ''; // Clear "Saving..." message
+    if (currentStep < setupSteps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    }
   } else {
     responseDiv.textContent = `Error: ${result.error}`;
     responseDiv.style.color = '#d92626';
