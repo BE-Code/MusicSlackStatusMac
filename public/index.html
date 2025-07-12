@@ -23,7 +23,7 @@
       <div id="wizard-container">
         <!-- Step 1: Create App -->
         <div id="step-1" class="setup-step">
-          <p>Open the <a href="https://api.slack.com/apps" target="_blank">Slack App creation page</a> and select <strong>"Create an App"</strong>, then choose <strong>"From scratch"</strong>.</p>
+          <p>Go to Slack <strong><a href="https://api.slack.com/apps" target="_blank">App Creation</a></strong> > <strong>Create an App</strong> > <strong>From scratch</strong>.</p>
           <div class="navigation-buttons">
             <button class="next-step">Next &rarr;</button>
           </div>
@@ -31,7 +31,7 @@
 
         <!-- Step 2: Name App -->
         <div id="step-2" class="setup-step hidden">
-          <p>Type <code>Music Slack Status Mac</code> for the App Name and choose your workspace. The App Credentials will appear on this page after you create the app.</p>
+          <p>Type <code>Music Slack Status Mac</code> for the App Name and choose your workspace.</p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
             <button class="next-step">Next &rarr;</button>
@@ -40,7 +40,7 @@
 
         <!-- Step 3: Credentials Form -->
         <div id="step-3" class="setup-step hidden">
-          <p>On the "Basic Information" page for your app, find the <strong>App Credentials</strong> section and copy them into the fields below.</p>
+          <p>Copy your <strong>App Credentials</strong> into the fields below.</p>
           <form id="setupForm">
             <div class="form-group">
               <label for="appId">App ID</label>
@@ -64,7 +64,7 @@
 
         <!-- Step 4: Redirect URL -->
         <div id="step-4" class="setup-step hidden">
-          <p>Now, let's configure the permissions. In the left sidebar, go to <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a>. Under <strong>Redirect URLs</strong>, add this exact URL: <code>https://localhost:5001/oauth/redirect</code>. Then click <strong>Save URLs</strong>.</p>
+          <p>Go to <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> > Scroll to <strong>Redirect URLs</strong> > Add <code>https://localhost:5001/oauth/redirect</code> > <strong>Save URLs</strong></p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
             <button class="next-step">Next &rarr;</button>
@@ -73,7 +73,7 @@
 
         <!-- Step 5: Scopes -->
         <div id="step-5" class="setup-step hidden">
-          <p>Still on the <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> page, scroll down to the <strong>"Scopes"</strong> section. Under <strong>"User Token Scopes"</strong>, click <strong>"Add an OAuth Scope"</strong> and add <code>users.profile:write</code>.</p>
+          <p>Still on <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> > Scroll to <strong>Scopes</strong> > <strong>User Token Scopes</strong> > <strong>Add an OAuth Scope</strong> > Add <code>users.profile:write</code></p>
           <p>You're done with the Slack website! You can close it now.</p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
