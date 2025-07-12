@@ -4,6 +4,7 @@ import axios from 'axios';
 import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import https from 'https';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const port = process.env.PORT || 5001;
 
 const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
-const SLACK_REDIRECT_URI = `http://localhost:${port}/oauth/redirect`;
+const SLACK_REDIRECT_URI = `https://localhost:${port}/oauth/redirect`;
 
 let userSlackToken = process.env.SLACK_API_TOKEN;
 
@@ -136,12 +137,17 @@ app.get('*', (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
-app.listen(port, () => {
+const sslOptions = {
+    key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'cert.pem')),
+};
+
+https.createServer(sslOptions, app).listen(port, () => {
     if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
         console.log('-----------------------------------------------------------------');
         console.log('Slack App credentials not found.');
-        console.log('Please open http://localhost:5001 in your browser to complete setup.');
+        console.log(`Please open https://localhost:${port} in your browser to complete setup.`);
         console.log('-----------------------------------------------------------------');
     }
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on https://localhost:${port}`);
 }); 

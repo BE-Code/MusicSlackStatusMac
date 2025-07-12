@@ -35,6 +35,7 @@ const RAW_RUNTIME_STATE =
           ["cors", "npm:2.8.5"],\
           ["dotenv", "npm:17.2.0"],\
           ["express", "npm:4.21.2"],\
+          ["selfsigned", "npm:2.4.1"],\
           ["ts-node", "virtual:8781e65bcc6f6f81d72e3cd8d34bd7d8a0b8583b10629213daa70d1d431d7bffc28b963b818513098035f6ad3ef95b885e2f8cb2372c7aa8c3c197e025f54690#npm:10.9.2"],\
           ["ts-node-dev", "virtual:8781e65bcc6f6f81d72e3cd8d34bd7d8a0b8583b10629213daa70d1d431d7bffc28b963b818513098035f6ad3ef95b885e2f8cb2372c7aa8c3c197e025f54690#npm:2.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"]\
@@ -278,6 +279,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@types/node-forge", [\
+      ["npm:1.3.13", {\
+        "packageLocation": "../../../../.yarn/berry/cache/@types-node-forge-npm-1.3.13-c3535f99f7-10c0.zip/node_modules/@types/node-forge/",\
+        "packageDependencies": [\
+          ["@types/node-forge", "npm:1.3.13"],\
+          ["@types/node", "npm:24.0.13"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@types/qs", [\
       ["npm:6.14.0", {\
         "packageLocation": "../../../../.yarn/berry/cache/@types-qs-npm-6.14.0-e27d9ca044-10c0.zip/node_modules/@types/qs/",\
@@ -350,6 +361,7 @@ const RAW_RUNTIME_STATE =
           ["cors", "npm:2.8.5"],\
           ["dotenv", "npm:17.2.0"],\
           ["express", "npm:4.21.2"],\
+          ["selfsigned", "npm:2.4.1"],\
           ["ts-node", "virtual:8781e65bcc6f6f81d72e3cd8d34bd7d8a0b8583b10629213daa70d1d431d7bffc28b963b818513098035f6ad3ef95b885e2f8cb2372c7aa8c3c197e025f54690#npm:10.9.2"],\
           ["ts-node-dev", "virtual:8781e65bcc6f6f81d72e3cd8d34bd7d8a0b8583b10629213daa70d1d431d7bffc28b963b818513098035f6ad3ef95b885e2f8cb2372c7aa8c3c197e025f54690#npm:2.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"]\
@@ -1775,6 +1787,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["node-forge", [\
+      ["npm:1.3.1", {\
+        "packageLocation": "../../../../.yarn/berry/cache/node-forge-npm-1.3.1-f31fd566cc-10c0.zip/node_modules/node-forge/",\
+        "packageDependencies": [\
+          ["node-forge", "npm:1.3.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["node-gyp", [\
       ["npm:11.2.0", {\
         "packageLocation": "./.yarn/unplugged/node-gyp-npm-11.2.0-36aeb0fa50/node_modules/node-gyp/",\
@@ -2068,6 +2089,17 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../../.yarn/berry/cache/safer-buffer-npm-2.1.2-8d5c0b705e-10c0.zip/node_modules/safer-buffer/",\
         "packageDependencies": [\
           ["safer-buffer", "npm:2.1.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["selfsigned", [\
+      ["npm:2.4.1", {\
+        "packageLocation": "../../../../.yarn/berry/cache/selfsigned-npm-2.4.1-1ca1b883c5-10c0.zip/node_modules/selfsigned/",\
+        "packageDependencies": [\
+          ["selfsigned", "npm:2.4.1"],\
+          ["@types/node-forge", "npm:1.3.13"],\
+          ["node-forge", "npm:1.3.1"]\
         ],\
         "linkType": "HARD"\
       }]\
