@@ -14,4 +14,4 @@ yarn install
 yarn dev
 ```
 
-The application will be running at `http://localhost:5001`. Open this URL in your browser to begin.
+The application will be running at `https://localhost:5001`. Open this URL in your browser to begin.
