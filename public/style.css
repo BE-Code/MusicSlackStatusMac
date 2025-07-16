@@ -75,3 +75,43 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
 .navigation-buttons button + button {
   margin-left: 0.5rem;
 }
+
+#now-playing-container {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.now-playing-widget {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.album-art {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  margin-right: 1rem;
+  object-fit: cover;
+  background-color: #f0f2f5;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.track-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.artist-name {
+  font-size: 0.9rem;
+  color: #616061;
+  margin: 0.25rem 0 0;
+}

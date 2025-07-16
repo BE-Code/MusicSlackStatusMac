@@ -6,6 +6,7 @@ This web application allows you to update your Slack status locally. The first t
 
 ```bash
 yarn install
+yarn setup
 ```
 
 ## Running the Application

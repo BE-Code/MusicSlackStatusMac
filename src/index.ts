@@ -5,6 +5,8 @@ import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import https from 'https';
+import { WebSocketServer, WebSocket } from 'ws';
+import { getNowPlaying, NowPlayingData } from './cli/now-playing';
 
 dotenv.config();
 
@@ -150,7 +152,45 @@ const sslOptions = {
   cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'cert.pem')),
 };
 
-https.createServer(sslOptions, app).listen(port, () => {
+const server = https.createServer(sslOptions, app);
+const wss = new WebSocketServer({ server });
+
+let lastTrack: NowPlayingData | null = null;
+
+const clients = new Set<WebSocket>();
+
+wss.on('connection', (ws) => {
+  clients.add(ws);
+  ws.on('close', () => {
+    clients.delete(ws);
+  });
+});
+
+function broadcast(data: any) {
+  const jsonData = JSON.stringify(data);
+  clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(jsonData);
+    }
+  });
+}
+
+setInterval(async () => {
+  try {
+    const nowPlayingData = await getNowPlaying();
+
+    // Check if the track has changed
+    if (JSON.stringify(nowPlayingData) !== JSON.stringify(lastTrack)) {
+      lastTrack = nowPlayingData;
+      broadcast({ type: 'NOW_PLAYING_UPDATE', data: lastTrack });
+    }
+  } catch (error) {
+    console.error('Error polling for Now Playing data:', error);
+    broadcast({ type: 'NOW_PLAYING_ERROR', error: 'Failed to fetch Now Playing data.' });
+  }
+}, 3000); // Poll every 3 seconds
+
+server.listen(port, () => {
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
     console.log('-----------------------------------------------------------------');
     console.log('Slack App credentials not found.');

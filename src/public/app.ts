@@ -36,12 +36,87 @@ document.addEventListener('DOMContentLoaded', async () => {
       showStep(currentStep);
     } else if (data.status === 'READY') {
       statusContainer.classList.remove('hidden');
+      connectWebSocket();
     }
 
   } catch (error) {
     loader.innerHTML = '<p>Could not connect to the server. Is it running? Refresh the page to try again.</p>';
   }
 });
+
+interface NowPlayingData {
+  title: string;
+  artist: string;
+  album: string;
+  isPlaying: boolean;
+}
+
+function connectWebSocket() {
+  const ws = new WebSocket(`wss://${window.location.host}`);
+
+  ws.onopen = () => {
+    console.log('WebSocket connection established');
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const message = JSON.parse(event.data);
+      if (message.type === 'NOW_PLAYING_UPDATE') {
+        updateNowPlayingUI(message.data);
+      }
+    } catch (error) {
+      console.error('Error parsing WebSocket message:', error);
+    }
+  };
+
+  ws.onclose = () => {
+    console.log('WebSocket connection closed. Reconnecting in 3 seconds...');
+    setTimeout(connectWebSocket, 3000);
+  };
+
+  ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+    ws.close();
+  };
+}
+
+async function getAlbumArt(artist: string, album: string): Promise<string | null> {
+  try {
+    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist)}+${encodeURIComponent(album)}&entity=album&limit=1`);
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    if (data.resultCount > 0 && data.results[0].artworkUrl100) {
+      return data.results[0].artworkUrl100.replace('100x100bb', '200x200bb');
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching album art:', error);
+    return null;
+  }
+}
+
+async function updateNowPlayingUI(data: NowPlayingData | null) {
+  const nowPlayingContainer = document.getElementById('now-playing-container');
+  const albumArt = document.getElementById('album-art') as HTMLImageElement;
+  const trackTitle = document.getElementById('track-title');
+  const artistName = document.getElementById('artist-name');
+
+  if (!nowPlayingContainer || !albumArt || !trackTitle || !artistName) {
+    return;
+  }
+
+  if (data && data.isPlaying) {
+    const albumArtUrl = await getAlbumArt(data.artist, data.album);
+    albumArt.src = albumArtUrl || ''; // Use a fallback image if you have one
+    trackTitle.textContent = data.title;
+    artistName.textContent = data.artist;
+    nowPlayingContainer.classList.remove('hidden');
+  } else {
+    nowPlayingContainer.classList.add('hidden');
+  }
+}
 
 function updateOauthLink(appId: string) {
   const oauthLinks = document.querySelectorAll('.oauth-dynamic-link') as NodeListOf<HTMLAnchorElement>;
