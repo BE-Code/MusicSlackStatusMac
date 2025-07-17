@@ -1,3 +1,5 @@
+import { NowPlayingData } from '../cli/now-playing';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
   const setupContainer = document.getElementById('setup-container');
@@ -44,13 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-interface NowPlayingData {
-  title: string;
-  artist: string;
-  album: string;
-  isPlaying: boolean;
-}
-
 function connectWebSocket() {
   const ws = new WebSocket(`wss://${window.location.host}`);
 
@@ -63,6 +58,9 @@ function connectWebSocket() {
       const message = JSON.parse(event.data);
       if (message.type === 'NOW_PLAYING_UPDATE') {
         updateNowPlayingUI(message.data);
+      }
+      if (message.type === 'NOW_PLAYING_ERROR') {
+        console.error('Error fetching Now Playing data:', message.error);
       }
     } catch (error) {
       console.error('Error parsing WebSocket message:', error);
@@ -80,23 +78,6 @@ function connectWebSocket() {
   };
 }
 
-async function getAlbumArt(artist: string, album: string): Promise<string | null> {
-  try {
-    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist)}+${encodeURIComponent(album)}&entity=album&limit=1`);
-    if (!response.ok) {
-      return null;
-    }
-    const data = await response.json();
-    if (data.resultCount > 0 && data.results[0].artworkUrl100) {
-      return data.results[0].artworkUrl100.replace('100x100bb', '200x200bb');
-    }
-    return null;
-  } catch (error) {
-    console.error('Error fetching album art:', error);
-    return null;
-  }
-}
-
 async function updateNowPlayingUI(data: NowPlayingData | null) {
   const nowPlayingContainer = document.getElementById('now-playing-container');
   const albumArt = document.getElementById('album-art') as HTMLImageElement;
@@ -107,9 +88,12 @@ async function updateNowPlayingUI(data: NowPlayingData | null) {
     return;
   }
 
-  if (data && data.isPlaying) {
-    const albumArtUrl = await getAlbumArt(data.artist, data.album);
-    albumArt.src = albumArtUrl || ''; // Use a fallback image if you have one
+  if (data && data.playing) {
+    if (data.artworkData && data.artworkMimeType) {
+      albumArt.src = `data:${data.artworkMimeType};base64,${data.artworkData}`;
+    } else {
+      albumArt.src = ''; // Or a fallback image
+    }
     trackTitle.textContent = data.title;
     artistName.textContent = data.artist;
     nowPlayingContainer.classList.remove('hidden');

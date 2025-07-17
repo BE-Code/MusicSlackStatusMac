@@ -1,10 +1,19 @@
 import { exec } from "child_process";
 
+// Uses https://github.com/ungive/media-control to get the now playing data.
+
 export interface NowPlayingData {
   title: string;
   artist: string;
   album: string;
-  isPlaying: boolean;
+  playing: boolean;
+  artworkData?: string;
+  artworkMimeType?: string;
+  timestamp: string;
+  elapsedTime: number;
+  duration: number;
+  bundleIdentifier: string;
+  playbackRate: number;
 }
 
 export function getNowPlaying(): Promise<NowPlayingData | null> {
@@ -25,12 +34,7 @@ export function getNowPlaying(): Promise<NowPlayingData | null> {
 
       try {
         const nowPlayingData = JSON.parse(stdout);
-        resolve({
-          title: nowPlayingData.title,
-          artist: nowPlayingData.artist,
-          album: nowPlayingData.album,
-          isPlaying: nowPlayingData.playbackRate > 0,
-        });
+        resolve(nowPlayingData);
       } catch (parseError) {
         reject(
           new Error(`Error parsing JSON output from media-control: ${parseError}`)
