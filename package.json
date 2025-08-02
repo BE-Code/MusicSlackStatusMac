@@ -11,8 +11,7 @@
     "build:frontend": "tsc -p tsconfig.frontend.json",
     "build": "yarn clean && yarn build:backend && yarn build:frontend && yarn copy-assets",
     "start": "node compiled/backend/index.js",
-    "dev": "nodemon",
-    "now-playing": "ts-node src/backend/cli/now-playing.ts"
+    "dev": "nodemon"
   },
   "dependencies": {
     "axios": "^1.7.2",

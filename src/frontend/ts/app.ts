@@ -61,11 +61,25 @@ function connectWebSocket() {
   ws.onmessage = (event) => {
     try {
       const message = JSON.parse(event.data);
-      if (message.type === 'NOW_PLAYING_UPDATE') {
-        updateNowPlayingUI(message.data);
-      }
-      if (message.type === 'NOW_PLAYING_ERROR') {
-        console.error('Error fetching Now Playing data:', message.error);
+      switch (message.type) {
+        case 'NOW_PLAYING_UPDATE':
+          updateNowPlayingUI(message.data);
+          break;
+        case 'NOW_PLAYING_PAUSED':
+          const pausedOverlay = document.getElementById('paused-overlay');
+          if (pausedOverlay) {
+            pausedOverlay.classList.remove('hidden');
+          }
+          break;
+        case 'NOW_PLAYING_STOPPED':
+          const nowPlayingContainer = document.getElementById('now-playing-container');
+          if (nowPlayingContainer) {
+            nowPlayingContainer.classList.add('hidden');
+          }
+          break;
+        case 'NOW_PLAYING_ERROR':
+          console.error('Error fetching Now Playing data:', message.error);
+          break;
       }
     } catch (error) {
       console.error('Error parsing WebSocket message:', error);
@@ -88,12 +102,13 @@ async function updateNowPlayingUI(data: NowPlayingData | null) {
   const albumArt = document.getElementById('album-art') as HTMLImageElement;
   const trackTitle = document.getElementById('track-title');
   const artistName = document.getElementById('artist-name');
+  const pausedOverlay = document.getElementById('paused-overlay');
 
-  if (!nowPlayingContainer || !albumArt || !trackTitle || !artistName) {
+  if (!nowPlayingContainer || !albumArt || !trackTitle || !artistName || !pausedOverlay) {
     return;
   }
 
-  if (data && data.playing) {
+  if (data) {
     if (data.artworkData && data.artworkMimeType) {
       albumArt.src = `data:${data.artworkMimeType};base64,${data.artworkData}`;
     } else {
@@ -101,8 +116,14 @@ async function updateNowPlayingUI(data: NowPlayingData | null) {
     }
     trackTitle.textContent = data.title;
     artistName.textContent = data.artist;
+    
     nowPlayingContainer.classList.remove('hidden');
+    
+    // Always hide the overlay on a full update, as this implies the song is playing
+    pausedOverlay.classList.add('hidden');
+    
   } else {
+    // If no data, hide the entire container
     nowPlayingContainer.classList.add('hidden');
   }
 }

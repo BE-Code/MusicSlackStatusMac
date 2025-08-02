@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import https from "https";
 import { WebSocketServer, WebSocket } from "ws";
-import { getNowPlaying } from "./cli/now-playing";
+import { NowPlayingManager } from "./now-playing/now-playing-manager";
 import { NowPlayingData } from "../shared/types";
 
 dotenv.config();
@@ -159,8 +159,6 @@ const sslOptions = {
 const server = https.createServer(sslOptions, app);
 const wss = new WebSocketServer({ server });
 
-let lastTrack: NowPlayingData | null = null;
-
 const clients = new Set<WebSocket>();
 
 wss.on("connection", (ws: WebSocket) => {
@@ -179,20 +177,19 @@ function broadcast(data: any) {
   });
 }
 
-setInterval(async () => {
-  try {
-    const nowPlayingData = await getNowPlaying();
-
-    // Check if the track has changed
-    if (JSON.stringify(nowPlayingData) !== JSON.stringify(lastTrack)) {
-      lastTrack = nowPlayingData;
-      broadcast({ type: "NOW_PLAYING_UPDATE", data: lastTrack });
-    }
-  } catch (error) {
-    console.error("Error polling for Now Playing data:", error);
-    broadcast({ type: "NOW_PLAYING_ERROR", error: "Failed to fetch Now Playing data." });
+const nowPlayingManager = new NowPlayingManager(
+  (nowPlayingData) => {
+    broadcast({ type: "NOW_PLAYING_UPDATE", data: nowPlayingData });
+  },
+  () => {
+    broadcast({ type: "NOW_PLAYING_PAUSED" });
+  },
+  () => {
+    broadcast({ type: "NOW_PLAYING_STOPPED" });
   }
-}, 3000); // Poll every 3 seconds
+);
+
+nowPlayingManager.startPolling();
 
 server.listen(port, () => {
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
