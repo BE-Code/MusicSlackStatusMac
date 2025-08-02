@@ -123,7 +123,7 @@ app.post("/set-status", async (req: Request, res: Response) => {
       {
         profile: {
           status_text: status,
-          status_emoji: ":headphones:",
+          status_emoji: ":musical_note:",
           status_expiration: expiration,
         },
       },
