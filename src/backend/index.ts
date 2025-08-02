@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 import fs from "fs";
 import https from "https";
 import { WebSocketServer, WebSocket } from "ws";
-import { getNowPlaying, NowPlayingData } from "./cli/now-playing";
+import { getNowPlaying } from "./cli/now-playing";
+import { NowPlayingData } from "../shared/types";
 
 dotenv.config();
 
@@ -22,7 +23,9 @@ let userSlackToken = process.env.SLACK_API_TOKEN;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "..", "public")));
+
+// Serve all static files from the `public` directory inside `compiled`
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get("/api/config/status", (req: Request, res: Response) => {
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET || !SLACK_APP_ID) {
@@ -143,8 +146,9 @@ app.post("/set-status", async (req: Request, res: Response) => {
   }
 });
 
+// This must be last to ensure it doesn't interfere with other routes
 app.get("*", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const sslOptions = {

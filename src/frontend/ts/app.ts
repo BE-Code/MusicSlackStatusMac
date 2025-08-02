@@ -1,4 +1,4 @@
-import { NowPlayingData } from '../cli/now-playing';
+import { NowPlayingData } from '../../shared/types';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
@@ -39,9 +39,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (data.status === 'READY') {
       statusContainer.classList.remove('hidden');
       connectWebSocket();
+    } else {
+      // This case should not be reached, but it's good practice to handle it.
+      console.error('Unknown status received from server:', data.status);
+      loader.innerHTML = '<p>An unknown error occurred. Please check the console.</p>';
     }
 
   } catch (error) {
+    console.error('Error fetching or processing config status:', error);
     loader.innerHTML = '<p>Could not connect to the server. Is it running? Refresh the page to try again.</p>';
   }
 });

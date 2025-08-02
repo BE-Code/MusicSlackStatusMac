@@ -1,15 +1,18 @@
 {
   "name": "slack-status-updater",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "compiled/backend/index.js",
   "license": "MIT",
   "scripts": {
-    "setup": "scripts/setup.sh",
-    "build:backend": "tsc",
-    "build:frontend": "tsc --project tsconfig.frontend.json",
-    "build": "yarn build:backend && yarn build:frontend",
-    "start": "node dist/index.js",
-    "dev": "concurrently \"yarn build:backend --watch\" \"yarn build:frontend --watch\" \"nodemon dist/index.js\""
+    "setup": "scripts/setup.sh && yarn install && yarn build",
+    "clean": "rm -rf compiled",
+    "copy-assets": "cp -r certs compiled/ && cp -r src/frontend/public compiled/",
+    "build:backend": "tsc -p tsconfig.backend.json",
+    "build:frontend": "tsc -p tsconfig.frontend.json",
+    "build": "yarn clean && yarn build:backend && yarn build:frontend && yarn copy-assets",
+    "start": "node compiled/backend/index.js",
+    "dev": "nodemon",
+    "now-playing": "ts-node src/backend/cli/now-playing.ts"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -25,7 +28,8 @@
     "@types/node": "^20.14.9",
     "@types/ws": "^8.18.1",
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "ts-node-dev": "^2.0.0"
   },
   "packageManager": "yarn@4.6.0+sha224.acd0786f07ffc6c933940eb65fc1d627131ddf5455bddcc295dc90fd"
 }

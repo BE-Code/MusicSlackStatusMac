@@ -1,20 +1,7 @@
 import { exec } from "child_process";
+import { NowPlayingData } from "../../shared/types";
 
 // Uses https://github.com/ungive/media-control to get the now playing data.
-
-export interface NowPlayingData {
-  title: string;
-  artist: string;
-  album: string;
-  playing: boolean;
-  artworkData?: string;
-  artworkMimeType?: string;
-  timestamp: string;
-  elapsedTime: number;
-  duration: number;
-  bundleIdentifier: string;
-  playbackRate: number;
-}
 
 export function getNowPlaying(): Promise<NowPlayingData | null> {
   return new Promise((resolve, reject) => {

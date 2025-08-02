@@ -5,14 +5,16 @@ This web application allows you to update your Slack status locally. The first t
 ## Installation
 
 ```bash
-yarn install
 yarn setup
 ```
 
 ## Running the Application
 
 ```bash
-yarn dev
+yarn start
 ```
 
 The application will be running at `https://localhost:5001`. Open this URL in your browser to begin.
+
+> [!NOTE]
+> If running for development use `yarn dev`
