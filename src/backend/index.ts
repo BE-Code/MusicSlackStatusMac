@@ -8,6 +8,7 @@ import https from "https";
 import { WebSocketServer, WebSocket } from "ws";
 import { NowPlayingManager } from "./now-playing/now-playing-manager";
 import { NowPlayingEventType } from "../shared/types";
+import { SlackManager } from "./slack-manager";
 
 dotenv.config();
 
@@ -20,6 +21,11 @@ let SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = `https://localhost:${port}/oauth/redirect`;
 
 let userSlackToken = process.env.SLACK_API_TOKEN;
+
+let slackManager: SlackManager | null = null;
+if (userSlackToken) {
+  slackManager = new SlackManager(userSlackToken);
+}
 
 app.use(cors());
 app.use(express.json());
@@ -89,6 +95,10 @@ app.get("/oauth/redirect", async (req: Request, res: Response) => {
     if (response.data.ok) {
       const token = response.data.authed_user.access_token;
       userSlackToken = token;
+      if (!userSlackToken) {
+        return res.status(500).send("Error obtaining token.");
+      }
+      slackManager = new SlackManager(userSlackToken);
 
       // In a real app, encrypt and store this token securely.
       // For this local app, we'll append it to the .env file.
@@ -112,36 +122,14 @@ app.get("/api/auth/status", (req: Request, res: Response) => {
 app.post("/set-status", async (req: Request, res: Response) => {
   const { status } = req.body;
 
-  if (!userSlackToken) {
+  if (!slackManager) {
     return res.status(401).json({ error: "Not authenticated. Please add to Slack first." });
   }
 
   try {
-    const expiration = Math.floor(Date.now() / 1000) + 10 * 60; // 30 minutes from now
-    const response = await axios.post(
-      "https://slack.com/api/users.profile.set",
-      {
-        profile: {
-          status_text: status,
-          status_emoji: ":musical_note:",
-          status_expiration: expiration,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userSlackToken}`,
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      }
-    );
-
-    if (response.data.ok) {
-      res.status(200).json({ message: "Status updated successfully!" });
-    } else {
-      res.status(500).json({ error: `Failed to set status: ${response.data.error}` });
-    }
+    await slackManager.updateStatus(status);
+    res.status(200).json({ message: "Status updated successfully!" });
   } catch (error) {
-    console.error("Error setting Slack status:", error);
     res.status(500).json({ error: "An unexpected error occurred." });
   }
 });
