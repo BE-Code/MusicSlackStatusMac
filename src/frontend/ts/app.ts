@@ -3,10 +3,10 @@ import { NowPlayingData, NowPlayingEventType } from '../../shared/types';
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
   const setupContainer = document.getElementById('setup-container');
-  const statusContainer = document.getElementById('status-container');
+  const nowPlayingContainer = document.getElementById('now-playing-container');
   const mainContainer = document.getElementById('main-container');
 
-  if (!loader || !setupContainer || !statusContainer || !mainContainer) {
+  if (!loader || !setupContainer || !nowPlayingContainer || !mainContainer) {
     console.error('Required elements not found in the DOM.');
     return;
   }
@@ -36,11 +36,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       setupContainer.classList.remove('hidden');
       currentStep = 5; // Go to the last step (authentication)
       showStep(currentStep);
-    } else if (data.status === 'READY') {
-      const nowPlayingContainer = document.getElementById('now-playing-container');
-      if (nowPlayingContainer) {
-        nowPlayingContainer.classList.remove('hidden');
-      }
+    } else     if (data.status === 'READY') {
+      nowPlayingContainer.classList.remove('hidden');
       connectWebSocket();
     } else {
       // This case should not be reached, but it's good practice to handle it.
