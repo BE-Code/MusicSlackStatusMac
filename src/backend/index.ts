@@ -174,12 +174,15 @@ function broadcast(data: any) {
 }
 
 const nowPlayingManager = new NowPlayingManager(
-  (nowPlayingData) => broadcast({
-    type: NowPlayingEventType.NOW_PLAYING_UPDATE,
-    data: nowPlayingData
-  }),
+  (nowPlayingData) => {
+    broadcast({
+      type: NowPlayingEventType.NOW_PLAYING_UPDATE,
+      data: nowPlayingData
+    });
+    updateStatus(`${nowPlayingData.title} - ${nowPlayingData.artist}`);
+  },
   () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_PAUSED }),
-  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_RESUMED })
+  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_RESUMED }),
 );
 
 nowPlayingManager.startPolling();
