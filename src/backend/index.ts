@@ -7,7 +7,7 @@ import fs from "fs";
 import https from "https";
 import { WebSocketServer, WebSocket } from "ws";
 import { NowPlayingManager } from "./now-playing/now-playing-manager";
-import { NowPlayingData } from "../shared/types";
+import { NowPlayingEventType } from "../shared/types";
 
 dotenv.config();
 
@@ -161,13 +161,6 @@ const wss = new WebSocketServer({ server });
 
 const clients = new Set<WebSocket>();
 
-wss.on("connection", (ws: WebSocket) => {
-  clients.add(ws);
-  ws.on("close", () => {
-    clients.delete(ws);
-  });
-});
-
 function broadcast(data: any) {
   const jsonData = JSON.stringify(data);
   clients.forEach((client) => {
@@ -178,18 +171,34 @@ function broadcast(data: any) {
 }
 
 const nowPlayingManager = new NowPlayingManager(
-  (nowPlayingData) => {
-    broadcast({ type: "NOW_PLAYING_UPDATE", data: nowPlayingData });
-  },
-  () => {
-    broadcast({ type: "NOW_PLAYING_PAUSED" });
-  },
-  () => {
-    broadcast({ type: "NOW_PLAYING_STOPPED" });
-  }
+  (nowPlayingData) => broadcast({
+    type: NowPlayingEventType.NOW_PLAYING_UPDATE,
+    data: nowPlayingData
+  }),
+  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_PAUSED }),
+  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_STOPPED })
 );
 
 nowPlayingManager.startPolling();
+
+wss.on("connection", (ws: WebSocket) => {
+  clients.add(ws);
+
+  // Send the current "now playing" data if it exists
+  const currentData = nowPlayingManager.currentNowPlayingData;
+  if (currentData) {
+    ws.send(
+      JSON.stringify({
+        type: NowPlayingEventType.NOW_PLAYING_UPDATE,
+        data: currentData,
+      })
+    );
+  }
+
+  ws.on("close", () => {
+    clients.delete(ws);
+  });
+});
 
 server.listen(port, () => {
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {

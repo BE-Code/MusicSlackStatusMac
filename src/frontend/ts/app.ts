@@ -1,4 +1,4 @@
-import { NowPlayingData } from '../../shared/types';
+import { NowPlayingData, NowPlayingEventType } from '../../shared/types';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
@@ -61,24 +61,25 @@ function connectWebSocket() {
   ws.onmessage = (event) => {
     try {
       const message = JSON.parse(event.data);
+      console.log(message);
       switch (message.type) {
-        case 'NOW_PLAYING_UPDATE':
+        case NowPlayingEventType.NOW_PLAYING_UPDATE:
           updateNowPlayingUI(message.data);
           break;
-        case 'NOW_PLAYING_PAUSED':
+        case NowPlayingEventType.NOW_PLAYING_PAUSED:
           const pausedOverlay = document.getElementById('paused-overlay');
           if (pausedOverlay) {
             pausedOverlay.classList.remove('hidden');
           }
           break;
-        case 'NOW_PLAYING_STOPPED':
+        case NowPlayingEventType.NOW_PLAYING_STOPPED:
           const nowPlayingContainer = document.getElementById('now-playing-container');
           if (nowPlayingContainer) {
             nowPlayingContainer.classList.add('hidden');
           }
           break;
-        case 'NOW_PLAYING_ERROR':
-          console.error('Error fetching Now Playing data:', message.error);
+        default:
+          console.error('Unknown message type:', message.type);
           break;
       }
     } catch (error) {
@@ -116,12 +117,11 @@ async function updateNowPlayingUI(data: NowPlayingData | null) {
     }
     trackTitle.textContent = data.title;
     artistName.textContent = data.artist;
-    
+
     nowPlayingContainer.classList.remove('hidden');
-    
+
     // Always hide the overlay on a full update, as this implies the song is playing
     pausedOverlay.classList.add('hidden');
-    
   } else {
     // If no data, hide the entire container
     nowPlayingContainer.classList.add('hidden');

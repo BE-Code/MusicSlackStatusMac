@@ -13,19 +13,22 @@ export class NowPlayingManager {
     private onSongChanged: SongChangeHandler,
     private onSongPaused: SongPausedHandler,
     private onSongStopped: SongStoppedHandler,
-    private pollingRate = 2000
+    private macPollingRate = 2000,
   ) {}
 
+  public get currentNowPlayingData(): NowPlayingData | null {
+    return this.lastNowPlayingData;
+  }
+
   public startPolling() {
-    if (this.pollingInterval) {
-      this.stopPolling();
-    }
+    this.stopPolling();
+
     // Initial check
     this.checkForUpdates();
 
     this.pollingInterval = setInterval(
       () => this.checkForUpdates(),
-      this.pollingRate
+      this.macPollingRate
     );
   }
 
@@ -65,10 +68,8 @@ export class NowPlayingManager {
     const isPlaying = nowPlayingData.playing;
 
     if (wasPlaying && !isPlaying) {
-      // Song was just paused
       this.onSongPaused();
     } else if (!wasPlaying && isPlaying) {
-      // Song was just resumed, send a full update
       this.onSongChanged(nowPlayingData);
     }
 
