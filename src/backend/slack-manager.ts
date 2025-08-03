@@ -10,7 +10,7 @@ export class SlackManager {
     this.slack = new WebClient(token);
   }
 
-  public async updateStatus(statusText: string, statusEmoji = ":musical_note:"): Promise<void> {
+  public async updateStatus(statusText: string, statusEmoji: string): Promise<void> {
     try {
       const expiration = Math.floor(Date.now() / 1000) + 10 * 60; // 10 minutes from now
 
@@ -37,6 +37,17 @@ export class SlackManager {
       });
     } catch (error) {
       console.error('Error clearing slack status:', error);
+      throw error;
+    }
+  }
+
+  public async getStatus(): Promise<{ statusText: string, statusEmoji: string }> {
+    try {
+      const response = await this.slack.users.profile.get({});
+      const { status_text: statusText = '', status_emoji: statusEmoji = '' } = response.profile || {};
+      return { statusText, statusEmoji };
+    } catch (error) {
+      console.error('Error getting slack status:', error);
       throw error;
     }
   }

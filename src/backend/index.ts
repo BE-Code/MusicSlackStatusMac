@@ -119,6 +119,21 @@ app.get("/api/auth/status", (req: Request, res: Response) => {
   res.json({ hasToken: !!userSlackToken });
 });
 
+async function updateStatus(status: string) {
+  if (!slackManager) return;
+  // If status can be read, only update music statuses
+  try {
+    const { statusEmoji } = await slackManager.getStatus();
+    if (statusEmoji && statusEmoji !== ":musical_note:") return;
+  } catch (error) { }
+  try {
+    await slackManager.updateStatus(status, ":musical_note:");
+  } catch (error) {
+    console.error("Error updating Slack status:", error);
+    throw error;
+  }
+}
+
 app.post("/set-status", async (req: Request, res: Response) => {
   const { status } = req.body;
 
@@ -127,7 +142,7 @@ app.post("/set-status", async (req: Request, res: Response) => {
   }
 
   try {
-    await slackManager.updateStatus(status);
+    await updateStatus(status);
     res.status(200).json({ message: "Status updated successfully!" });
   } catch (error) {
     res.status(500).json({ error: "An unexpected error occurred." });
