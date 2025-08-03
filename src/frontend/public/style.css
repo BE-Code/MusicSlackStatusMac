@@ -88,36 +88,51 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
   margin-top: 1rem;
 }
 
-.album-art-container {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin-right: 1rem;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.album-art {
+.record-container {
+  width: 80px;
+  height: 80px;
+  margin-right: 1rem;
+}
+
+.record {
+  position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-  background-color: #f0f2f5;
+  border-radius: 50%;
+  background-color: #222; /* Vinyl color */
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  animation: spin 4s linear infinite;
+  animation-play-state: paused; /* Initially paused */
 }
 
-.paused-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1em;
-    font-weight: bold;
-    border-radius: 8px;
+.record.playing {
+  animation-play-state: running;
 }
+
+.record img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.record-hole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  background-color: #f0f2f5; /* Same as body background */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid #ccc;
+}
+
 
 .track-info {
   display: flex;

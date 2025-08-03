@@ -120,12 +120,12 @@ function updateNowPlayingUI(data: NowPlayingData | null) {
 }
 
 function showPlayPause(isPlaying: boolean) {
-  const pausedOverlay = document.getElementById('paused-overlay');
-  if (pausedOverlay) {
+  const record = document.getElementById('record');
+  if (record) {
     if (isPlaying) {
-      pausedOverlay.classList.add('hidden');
+      record.classList.add('playing');
     } else {
-      pausedOverlay.classList.remove('hidden');
+      record.classList.remove('playing');
     }
   }
 }
