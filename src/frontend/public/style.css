@@ -77,14 +77,14 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
 }
 
 #now-playing-container {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .now-playing-widget {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  text-align: left;
+  text-align: center;
   margin-top: 1rem;
 }
 
@@ -94,9 +94,9 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
 }
 
 .record-container {
-  width: 80px;
-  height: 80px;
-  margin-right: 1rem;
+  width: 250px;
+  height: 250px;
+  margin-bottom: 1.5rem;
 }
 
 .record {
@@ -106,7 +106,7 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
   border-radius: 50%;
   background-color: #222; /* Vinyl color */
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  animation: spin 4s linear infinite;
+  animation: spin 6s linear infinite;
   animation-play-state: paused; /* Initially paused */
 }
 
@@ -125,12 +125,12 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 15px;
-  height: 15px;
+  width: 45px;
+  height: 45px;
   background-color: #f0f2f5; /* Same as body background */
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  border: 2px solid #ccc;
+  border: 4px solid #ccc;
 }
 
 
