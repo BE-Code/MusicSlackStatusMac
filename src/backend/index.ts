@@ -176,7 +176,7 @@ const nowPlayingManager = new NowPlayingManager(
     data: nowPlayingData
   }),
   () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_PAUSED }),
-  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_STOPPED })
+  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_RESUMED })
 );
 
 nowPlayingManager.startPolling();

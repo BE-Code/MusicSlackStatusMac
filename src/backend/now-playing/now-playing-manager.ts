@@ -1,20 +1,16 @@
 import { NowPlayingData } from "../../shared/types";
 import { getNowPlaying } from "./now-playing-mac";
 
-type SongChangeHandler = (data: NowPlayingData) => void;
-type SongPausedHandler = () => void;
-type SongStoppedHandler = () => void;
-
 export class NowPlayingManager {
   private lastNowPlayingData: NowPlayingData | null = null;
   private pollingInterval: NodeJS.Timeout | null = null;
 
   constructor(
-    private onSongChanged: SongChangeHandler,
-    private onSongPaused: SongPausedHandler,
-    private onSongStopped: SongStoppedHandler,
+    private onSongChanged: (data: NowPlayingData) => void,
+    private onSongPaused: () => void,
+    private onSongResumed: () => void,
     private macPollingRate = 2000,
-  ) {}
+  ) { }
 
   public get currentNowPlayingData(): NowPlayingData | null {
     return this.lastNowPlayingData;
@@ -42,38 +38,41 @@ export class NowPlayingManager {
   private async checkForUpdates() {
     const nowPlayingData = await getNowPlaying();
 
-    // Case 1: Music stopped
+    // Music stopped entirely
     if (!nowPlayingData) {
       if (this.lastNowPlayingData) {
-        this.onSongStopped();
-        this.lastNowPlayingData = null;
+        this.lastNowPlayingData.playing = false;
+        this.onSongPaused();
       }
       return;
     }
 
-    // Case 2: A new song is playing (or it's the first song)
-    if (
-      !this.lastNowPlayingData ||
+    // It's the first song (or the first time we've seen the song)
+    if (!this.lastNowPlayingData ||
       this.lastNowPlayingData.title !== nowPlayingData.title ||
       this.lastNowPlayingData.artist !== nowPlayingData.artist ||
       this.lastNowPlayingData.album !== nowPlayingData.album
     ) {
-      this.onSongChanged(nowPlayingData);
       this.lastNowPlayingData = nowPlayingData;
+      this.onSongChanged(this.lastNowPlayingData);
       return;
     }
 
-    // Case 3: Same song, check for pause/resume state change
-    const wasPlaying = this.lastNowPlayingData.playing;
-    const isPlaying = nowPlayingData.playing;
-
-    if (wasPlaying && !isPlaying) {
-      this.onSongPaused();
-    } else if (!wasPlaying && isPlaying) {
-      this.onSongChanged(nowPlayingData);
+    // Adding missing artwork
+    if (!this.lastNowPlayingData.artworkData) {
+      this.lastNowPlayingData.artworkData = nowPlayingData.artworkData;
+      this.lastNowPlayingData.artworkMimeType = nowPlayingData.artworkMimeType;
+      this.onSongChanged(this.lastNowPlayingData);
     }
 
-    // Always update the last known state
-    this.lastNowPlayingData = nowPlayingData;
+    // Play/pause state changed
+    if (this.lastNowPlayingData.playing !== nowPlayingData.playing) {
+      this.lastNowPlayingData.playing = nowPlayingData.playing;
+      if (this.lastNowPlayingData.playing) {
+        this.onSongResumed();
+      } else {
+        this.onSongPaused();
+      }
+    }
   }
 }

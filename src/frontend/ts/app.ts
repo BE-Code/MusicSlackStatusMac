@@ -67,16 +67,10 @@ function connectWebSocket() {
           updateNowPlayingUI(message.data);
           break;
         case NowPlayingEventType.NOW_PLAYING_PAUSED:
-          const pausedOverlay = document.getElementById('paused-overlay');
-          if (pausedOverlay) {
-            pausedOverlay.classList.remove('hidden');
-          }
+          showPlayPause(false);
           break;
-        case NowPlayingEventType.NOW_PLAYING_STOPPED:
-          const nowPlayingContainer = document.getElementById('now-playing-container');
-          if (nowPlayingContainer) {
-            nowPlayingContainer.classList.add('hidden');
-          }
+        case NowPlayingEventType.NOW_PLAYING_RESUMED:
+          showPlayPause(true);
           break;
         default:
           console.error('Unknown message type:', message.type);
@@ -98,7 +92,7 @@ function connectWebSocket() {
   };
 }
 
-async function updateNowPlayingUI(data: NowPlayingData | null) {
+function updateNowPlayingUI(data: NowPlayingData | null) {
   const nowPlayingContainer = document.getElementById('now-playing-container');
   const albumArt = document.getElementById('album-art') as HTMLImageElement;
   const trackTitle = document.getElementById('track-title');
@@ -125,6 +119,17 @@ async function updateNowPlayingUI(data: NowPlayingData | null) {
   } else {
     // If no data, hide the entire container
     nowPlayingContainer.classList.add('hidden');
+  }
+}
+
+function showPlayPause(isPlaying: boolean) {
+  const pausedOverlay = document.getElementById('paused-overlay');
+  if (pausedOverlay) {
+    if (isPlaying) {
+      pausedOverlay.classList.add('hidden');
+    } else {
+      pausedOverlay.classList.remove('hidden');
+    }
   }
 }
 
