@@ -97,9 +97,8 @@ function updateNowPlayingUI(data: NowPlayingData | null) {
   const albumArt = document.getElementById('album-art') as HTMLImageElement;
   const trackTitle = document.getElementById('track-title');
   const artistName = document.getElementById('artist-name');
-  const pausedOverlay = document.getElementById('paused-overlay');
 
-  if (!nowPlayingContainer || !albumArt || !trackTitle || !artistName || !pausedOverlay) {
+  if (!nowPlayingContainer || !albumArt || !trackTitle || !artistName) {
     return;
   }
 
@@ -113,9 +112,7 @@ function updateNowPlayingUI(data: NowPlayingData | null) {
     artistName.textContent = data.artist;
 
     nowPlayingContainer.classList.remove('hidden');
-
-    // Always hide the overlay on a full update, as this implies the song is playing
-    pausedOverlay.classList.add('hidden');
+    showPlayPause(data.playing);
   } else {
     // If no data, hide the entire container
     nowPlayingContainer.classList.add('hidden');

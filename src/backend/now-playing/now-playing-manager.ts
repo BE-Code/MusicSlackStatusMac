@@ -47,6 +47,9 @@ export class NowPlayingManager {
       return;
     }
 
+    // Ignore audio that is not music
+    if (!nowPlayingData.album) return;
+
     // It's the first song (or the first time we've seen the song)
     if (!this.lastNowPlayingData ||
       this.lastNowPlayingData.title !== nowPlayingData.title ||
