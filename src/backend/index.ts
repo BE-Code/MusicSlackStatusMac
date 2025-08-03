@@ -134,21 +134,6 @@ async function updateStatus(status: string) {
   }
 }
 
-app.post("/set-status", async (req: Request, res: Response) => {
-  const { status } = req.body;
-
-  if (!slackManager) {
-    return res.status(401).json({ error: "Not authenticated. Please add to Slack first." });
-  }
-
-  try {
-    await updateStatus(status);
-    res.status(200).json({ message: "Status updated successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: "An unexpected error occurred." });
-  }
-});
-
 // This must be last to ensure it doesn't interfere with other routes
 app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));

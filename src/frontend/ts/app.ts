@@ -37,7 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentStep = 5; // Go to the last step (authentication)
       showStep(currentStep);
     } else if (data.status === 'READY') {
-      statusContainer.classList.remove('hidden');
+      const nowPlayingContainer = document.getElementById('now-playing-container');
+      if (nowPlayingContainer) {
+        nowPlayingContainer.classList.remove('hidden');
+      }
       connectWebSocket();
     } else {
       // This case should not be reached, but it's good practice to handle it.
@@ -213,31 +216,4 @@ document.getElementById('setupForm')?.addEventListener('submit', async function 
   }
 });
 
-document.getElementById('statusForm')?.addEventListener('submit', async function (event) {
-  event.preventDefault();
-  const statusTextInput = document.getElementById('statusText') as HTMLInputElement;
-  const responseDiv = document.getElementById('response');
 
-  if (!statusTextInput || !responseDiv) {
-    return;
-  }
-
-  const statusText = statusTextInput.value;
-  responseDiv.textContent = 'Setting status...';
-
-  try {
-    const response = await fetch('/set-status', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: statusText })
-    });
-    const result = await response.json();
-    if (response.ok) {
-      responseDiv.textContent = 'Status updated successfully!';
-    } else {
-      responseDiv.textContent = 'Error: ' + result.error;
-    }
-  } catch (error) {
-    responseDiv.textContent = 'An unexpected error occurred.';
-  }
-});

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Set Slack Status</title>
+  <title>Music Slack Status</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -23,7 +23,8 @@
       <div id="wizard-container">
         <!-- Step 1: Create App -->
         <div id="step-1" class="setup-step">
-          <p>Go to Slack <strong><a href="https://api.slack.com/apps" target="_blank">App Creation</a></strong> > <strong>Create an App</strong> > <strong>From scratch</strong></p>
+          <p>Go to Slack <strong><a href="https://api.slack.com/apps" target="_blank">App Creation</a></strong> >
+            <strong>Create an App</strong> > <strong>From scratch</strong></p>
           <div class="navigation-buttons">
             <button class="next-step">Next &rarr;</button>
           </div>
@@ -31,7 +32,8 @@
 
         <!-- Step 2: Name App -->
         <div id="step-2" class="setup-step hidden">
-          <p>Type <code>Music Slack Status Mac</code> for the App Name and choose your workspace. Click <strong>Create App</strong>.</p>
+          <p>Type <code>Music Slack Status Mac</code> for the App Name and choose your workspace. Click <strong>Create
+              App</strong>.</p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
             <button class="next-step">Next &rarr;</button>
@@ -64,7 +66,9 @@
 
         <!-- Step 4: Redirect URL -->
         <div id="step-4" class="setup-step hidden">
-          <p>Go to <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> > Scroll to <strong>Redirect URLs</strong> > Add <code>https://localhost:5001/oauth/redirect</code> > <strong>Save URLs</strong></p>
+          <p>Go to <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> >
+            Scroll to <strong>Redirect URLs</strong> > Add <code>https://localhost:5001/oauth/redirect</code> >
+            <strong>Save URLs</strong></p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
             <button class="next-step">Next &rarr;</button>
@@ -73,7 +77,9 @@
 
         <!-- Step 5: Scopes -->
         <div id="step-5" class="setup-step hidden">
-          <p>Still on <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> > Scroll to <strong>Scopes</strong> > <strong>User Token Scopes</strong> > <strong>Add an OAuth Scope</strong> > Add <code>users.profile:write</code> and <code>users.profile:read</code></p>
+          <p>Still on <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> >
+            Scroll to <strong>Scopes</strong> > <strong>User Token Scopes</strong> > <strong>Add an OAuth Scope</strong>
+            > Add <code>users.profile:write</code> and <code>users.profile:read</code></p>
           <p>You can close the Slack website now (no need to save)</p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
@@ -83,28 +89,18 @@
 
         <!-- Step 6: Authentication -->
         <div id="step-6" class="setup-step hidden">
-            <h1>Connect to Slack</h1>
-            <h2>Your credentials are saved. Now, connect your account.</h2>
-            <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
-            <div class="navigation-buttons">
-                <button class="prev-step">&larr; Previous</button>
-            </div>
+          <h1>Connect to Slack</h1>
+          <h2>Your credentials are saved. Now, connect your account.</h2>
+          <a href="#" id="slack-auth-button" class="button button-slack">Add to Slack</a>
+          <div class="navigation-buttons">
+            <button class="prev-step">&larr; Previous</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Main Status Setter -->
-    <div id="status-container" class="container-sm hidden">
-      <h1>Set Your Slack Status</h1>
-      <h2>Enter a status and it will appear in Slack.</h2>
-      <form id="statusForm">
-        <div class="form-group">
-          <input type="text" id="statusText" name="status" placeholder="What's your status?">
-        </div>
-        <button type="submit">Set Status</button>
-      </form>
-      <div class="response" id="response"></div>
-
+    <!-- Now Playing -->
+    <div id="status-container" class="container-sm">
       <div id="now-playing-container" class="hidden">
         <h3>Now Playing</h3>
         <div class="now-playing-widget">
