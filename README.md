@@ -1,6 +1,6 @@
-# Slack Status Updater
+# Music Slack Status
 
-This web application allows you to update your Slack status locally. The first time you run it, it will guide you through a one-time setup process in your browser.
+This web application syncs your currently playing music to your Slack status. The first time you run it, it will guide you through a one-time setup process in your browser.
 
 ## Installation
 
