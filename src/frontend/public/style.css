@@ -41,7 +41,7 @@ button,
 .response {
   margin-top: 1rem;
 }
-.hidden { display: none; }
+.hidden { display: none !important; }
 .setup-instructions { text-align: left; margin-bottom: 2rem; }
 .setup-instructions h3 { margin-top: 0; }
 .setup-instructions ol {
