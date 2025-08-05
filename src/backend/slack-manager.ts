@@ -15,10 +15,11 @@ export class SlackManager {
   public async updateStatus(statusText: string, statusEmoji: string): Promise<void> {
     try {
       const expiration = Math.floor(Date.now() / 1000) + 10 * 60; // 10 minutes from now
+      statusText = (statusText.length > SLACK_STATUS_TEXT_MAX_LENGTH) ? statusText.slice(0, SLACK_STATUS_TEXT_MAX_LENGTH - 3) + '...' : statusText;
 
       await this.slack.users.profile.set({
         profile: {
-          status_text: statusText.slice(0, SLACK_STATUS_TEXT_MAX_LENGTH),
+          status_text: statusText,
           status_emoji: statusEmoji,
           status_expiration: expiration,
         },
