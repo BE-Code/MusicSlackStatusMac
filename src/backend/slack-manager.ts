@@ -1,5 +1,7 @@
 import { WebClient } from '@slack/web-api';
 
+const SLACK_STATUS_TEXT_MAX_LENGTH = 100;
+
 export class SlackManager {
   private slack: WebClient;
 
@@ -16,7 +18,7 @@ export class SlackManager {
 
       await this.slack.users.profile.set({
         profile: {
-          status_text: statusText,
+          status_text: statusText.slice(0, SLACK_STATUS_TEXT_MAX_LENGTH),
           status_emoji: statusEmoji,
           status_expiration: expiration,
         },
