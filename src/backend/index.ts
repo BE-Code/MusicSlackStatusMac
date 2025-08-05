@@ -119,7 +119,7 @@ app.get("/api/auth/status", (req: Request, res: Response) => {
   res.json({ hasToken: !!userSlackToken });
 });
 
-async function updateStatus(status: string) {
+const updateStatus = async (status: string) => {
   if (!slackManager) return;
   // If status can be read, only update music statuses
   try {
@@ -132,6 +132,10 @@ async function updateStatus(status: string) {
     console.error("Error updating Slack status:", error);
     throw error;
   }
+}
+
+const updateStatusSong = (title: string, artist: string) => {
+  updateStatus(`${title} - ${artist}`);
 }
 
 // This must be last to ensure it doesn't interfere with other routes
@@ -149,7 +153,7 @@ const wss = new WebSocketServer({ server });
 
 const clients = new Set<WebSocket>();
 
-function broadcast(data: any) {
+const broadcast = (data: any) => {
   const jsonData = JSON.stringify(data);
   clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -164,10 +168,16 @@ const nowPlayingManager = new NowPlayingManager(
       type: NowPlayingEventType.NOW_PLAYING_UPDATE,
       data: nowPlayingData
     });
-    updateStatus(`${nowPlayingData.title} - ${nowPlayingData.artist}`);
+    updateStatusSong(nowPlayingData.title, nowPlayingData.artist);
   },
   () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_PAUSED }),
-  () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_RESUMED }),
+  () => {
+    broadcast({ type: NowPlayingEventType.NOW_PLAYING_RESUMED });
+    const { title, artist } = nowPlayingManager.currentNowPlayingData || {};
+    if (title && artist) {
+      updateStatusSong(title, artist);
+    }
+  },
 );
 
 nowPlayingManager.startPolling();
