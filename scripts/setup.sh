@@ -27,6 +27,22 @@ else
   echo "Homebrew is already installed."
 fi
 
+# Check for Node.js and install if we don't have it
+if ! command -v node &> /dev/null; then
+  echo "Node.js not found. Installing via Homebrew..."
+  brew install node
+else
+  echo "Node.js is already installed ($(node --version))"
+fi
+
+# Check for Yarn and install if we don't have it
+if ! command -v yarn &> /dev/null; then
+  echo "Yarn not found. Installing via Homebrew..."
+  brew install yarn
+else
+  echo "Yarn is already installed ($(yarn --version))"
+fi
+
 # Check for media-control and install if we don't have it
 if ! brew list media-control &> /dev/null; then
   echo "media-control not found. Installing..."
