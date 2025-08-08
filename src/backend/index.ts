@@ -5,6 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
 import https from "https";
+import open from "open";
 import { WebSocketServer, WebSocket } from "ws";
 import { NowPlayingManager } from "./now-playing/now-playing-manager";
 import { NowPlayingEventType } from "../shared/types";
@@ -206,11 +207,17 @@ server.listen(port, () => {
     console.log("Running in development mode");
   }
 
+  const serverUrl = `https://localhost:${port}`;
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
     console.log("-----------------------------------------------------------------");
     console.log("Slack App credentials not found.");
-    console.log(`Please open https://localhost:${port} in your browser to complete setup.`);
+    console.log(`Please open ${serverUrl} in your browser to complete setup.`);
     console.log("-----------------------------------------------------------------");
   }
-  console.log(`Server is running on https://localhost:${port}`);
+  console.log(`Server is running on ${serverUrl}`);
+
+  // Open the browser automatically
+  open(serverUrl).catch((error) => {
+    console.log("Could not automatically open browser:", error.message);
+  });
 });
