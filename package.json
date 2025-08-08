@@ -11,7 +11,7 @@
     "build:frontend": "tsc -p tsconfig.frontend.json",
     "build": "yarn clean && yarn build:backend && yarn build:frontend && yarn copy-assets",
     "start": "node compiled/backend/index.js",
-    "dev": "nodemon"
+    "dev": "NODE_ENV=development nodemon"
   },
   "dependencies": {
     "@slack/web-api": "^7.9.3",

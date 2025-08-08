@@ -37,6 +37,10 @@ export class NowPlayingManager {
 
   private async checkForUpdates() {
     const nowPlayingData = await getNowPlaying();
+    if (process.env.NODE_ENV === "development") {
+      const { artworkData, ...rest } = nowPlayingData || {};
+      console.log(nowPlayingData ? { ...rest, artworkData: artworkData?.length } : {});
+    }
 
     // Music stopped entirely
     if (!nowPlayingData) {

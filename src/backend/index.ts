@@ -202,6 +202,10 @@ wss.on("connection", (ws: WebSocket) => {
 });
 
 server.listen(port, () => {
+  if (process.env.NODE_ENV === "development") {
+    console.log("Running in development mode");
+  }
+
   if (!SLACK_CLIENT_ID || !SLACK_CLIENT_SECRET) {
     console.log("-----------------------------------------------------------------");
     console.log("Slack App credentials not found.");
