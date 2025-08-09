@@ -9,7 +9,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helve
   width: 100%;
 }
 .container-sm { max-width: 450px; }
-h1 { margin-bottom: 0.5rem; color: #1d1c1d; }
+h1 { margin-bottom: 2rem; color: #1d1c1d; }
 h2 { margin-top: 0; margin-bottom: 1.5rem; color: #616061; font-weight: 400; font-size: 1rem; }
 button,
 .button {
@@ -74,10 +74,6 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
 
 .navigation-buttons button + button {
   margin-left: 0.5rem;
-}
-
-#now-playing-container {
-  padding-bottom: 1rem;
 }
 
 .now-playing-widget {
@@ -154,7 +150,7 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
 
 /* Settings Section */
 .settings-section {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   border-top: 1px solid #eee;
 }
 
@@ -162,7 +158,7 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
   width: 100%;
   background: none;
   border: none;
-  padding: 1rem 0;
+  padding: 1rem 0 0;
   font-size: 0.9rem;
   color: #616061;
   cursor: pointer;
