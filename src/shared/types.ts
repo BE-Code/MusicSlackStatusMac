@@ -13,4 +13,12 @@ interface NowPlayingData {
   artworkData: string | null;
 }
 
-export { NowPlayingEventType, NowPlayingData };
+interface Settings {
+  syncSlackStatus: boolean;
+}
+
+export {
+  NowPlayingEventType,
+  NowPlayingData,
+  Settings,
+};

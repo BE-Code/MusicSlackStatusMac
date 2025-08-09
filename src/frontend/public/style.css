@@ -151,3 +151,109 @@ code { background-color: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-
   color: #616061;
   margin: 0.25rem 0 0;
 }
+
+/* Settings Section */
+.settings-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.settings-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #616061;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s;
+}
+
+.settings-toggle:hover {
+  color: #333;
+}
+
+.settings-arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.settings-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.settings-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 1rem;
+}
+
+.settings-content.expanded {
+  max-height: 200px;
+  padding: 1rem;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-text {
+  color: #1d1c1d;
+  font-size: 0.9rem;
+}
+
+/* Sliding Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+}
+
+.toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  display: block;
+  width: 44px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative;
+}
+
+.toggle-label::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-label {
+  background-color: #4A154B;
+}
+
+.toggle-input:checked + .toggle-label::after {
+  transform: translateX(20px);
+}

@@ -1,4 +1,4 @@
-import { NowPlayingData, NowPlayingEventType } from '../../shared/types';
+import { NowPlayingData, NowPlayingEventType, Settings } from '../../shared/types';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
@@ -211,6 +211,66 @@ document.getElementById('setupForm')?.addEventListener('submit', async function 
   } else {
     responseDiv.textContent = `Error: ${result.error}`;
     responseDiv.style.color = '#d92626';
+  }
+});
+
+// Settings Expandable Logic
+document.addEventListener('DOMContentLoaded', async () => {
+  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsContent = document.getElementById('settings-content');
+  const settingsArrow = document.getElementById('settings-arrow');
+  const syncSlackStatusCheckbox = document.getElementById('sync-slack-status') as HTMLInputElement;
+
+  if (settingsToggle && settingsContent && settingsArrow) {
+    settingsToggle.addEventListener('click', () => {
+      const isExpanded = settingsContent.classList.contains('expanded');
+
+      if (isExpanded) {
+        settingsContent.classList.remove('expanded');
+        settingsArrow.classList.remove('rotated');
+      } else {
+        settingsContent.classList.add('expanded');
+        settingsArrow.classList.add('rotated');
+      }
+    });
+  }
+
+  if (syncSlackStatusCheckbox) {
+    // Load settings from backend
+    try {
+      const response = await fetch('/api/settings');
+      const settings: Settings = await response.json();
+      syncSlackStatusCheckbox.checked = settings.syncSlackStatus;
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      // Fallback to default if API fails
+      syncSlackStatusCheckbox.checked = true;
+    }
+
+    // Save setting when changed
+    syncSlackStatusCheckbox.addEventListener('change', async () => {
+      const newSettings: Settings = {
+        syncSlackStatus: syncSlackStatusCheckbox.checked
+      };
+
+      try {
+        const response = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newSettings)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save settings');
+        }
+
+        console.log('Settings saved:', newSettings);
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        // Revert checkbox on error
+        syncSlackStatusCheckbox.checked = !syncSlackStatusCheckbox.checked;
+      }
+    });
   }
 });
 

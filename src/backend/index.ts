@@ -8,7 +8,7 @@ import https from "https";
 import open from "open";
 import { WebSocketServer, WebSocket } from "ws";
 import { NowPlayingManager } from "./now-playing/now-playing-manager";
-import { NowPlayingEventType } from "../shared/types";
+import { NowPlayingEventType, Settings } from "../shared/types";
 import { SlackManager } from "./slack-manager";
 
 dotenv.config();
@@ -22,6 +22,20 @@ let SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = `https://localhost:${port}/oauth/redirect`;
 
 let userSlackToken = process.env.SLACK_API_TOKEN;
+
+let settings: Settings = {
+  syncSlackStatus: process.env.SYNC_SLACK_STATUS !== 'false' // Default to true
+};
+
+const saveEnvFile = () => {
+  let envContent = '';
+  if (SLACK_APP_ID) envContent += `SLACK_APP_ID=${SLACK_APP_ID}\n`;
+  if (SLACK_CLIENT_ID) envContent += `SLACK_CLIENT_ID=${SLACK_CLIENT_ID}\n`;
+  if (SLACK_CLIENT_SECRET) envContent += `SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}\n`;
+  if (userSlackToken) envContent += `SLACK_API_TOKEN=${userSlackToken}\n`;
+  envContent += `SYNC_SLACK_STATUS=${settings.syncSlackStatus}\n`;
+  fs.writeFileSync('.env', envContent);
+};
 
 let slackManager: SlackManager | null = null;
 if (userSlackToken) {
@@ -51,15 +65,13 @@ app.post("/api/config/save", (req: Request, res: Response) => {
     return res.status(400).json({ error: "App ID, Client ID, and Client Secret are required." });
   }
 
-  const envContent = `SLACK_APP_ID=${appId}\nSLACK_CLIENT_ID=${clientId}\nSLACK_CLIENT_SECRET=${clientSecret}\n`;
-
   try {
-    fs.writeFileSync(".env", envContent);
-
     // Update in-memory variables
     SLACK_APP_ID = appId;
     SLACK_CLIENT_ID = clientId;
     SLACK_CLIENT_SECRET = clientSecret;
+
+    saveEnvFile();
 
     res.status(200).json({ message: "Configuration saved.", appId });
   } catch (error) {
@@ -101,10 +113,7 @@ app.get("/oauth/redirect", async (req: Request, res: Response) => {
       }
       slackManager = new SlackManager(userSlackToken);
 
-      // In a real app, encrypt and store this token securely.
-      // For this local app, we'll append it to the .env file.
-      fs.appendFileSync(".env", `\nSLACK_API_TOKEN=${token}`);
-
+      saveEnvFile();
       res.redirect("/");
     } else {
       res.status(500).send(`Error obtaining token: ${response.data.error}`);
@@ -120,8 +129,35 @@ app.get("/api/auth/status", (req: Request, res: Response) => {
   res.json({ hasToken: !!userSlackToken });
 });
 
+// Settings API endpoints
+app.get("/api/settings", (req: Request, res: Response) => {
+  res.json(settings);
+});
+
+app.post("/api/settings", (req: Request, res: Response) => {
+  const newSettings: Settings = req.body;
+
+  if (typeof newSettings.syncSlackStatus !== 'boolean') {
+    return res.status(400).json({ error: "Invalid settings format" });
+  }
+
+  if (!newSettings.syncSlackStatus && settings.syncSlackStatus) {
+    clearStatus();
+  } else if (newSettings.syncSlackStatus && !settings.syncSlackStatus) {
+    const { title, artist } = nowPlayingManager.currentNowPlayingData || {};
+    if (title && artist) {
+      updateStatusSong(title, artist);
+    }
+  }
+
+  settings = { ...newSettings };
+  saveEnvFile();
+
+  res.json({ success: true, settings });
+});
+
 const updateStatus = async (status: string) => {
-  if (!slackManager) return;
+  if (!slackManager || !settings.syncSlackStatus) return;
   // If status can be read, only update music statuses
   try {
     const { statusEmoji } = await slackManager.getStatus();
@@ -137,6 +173,17 @@ const updateStatus = async (status: string) => {
 
 const updateStatusSong = (title: string, artist: string) => {
   updateStatus(`${title} - ${artist}`);
+}
+
+const clearStatus = async () => {
+  try {
+    const { statusEmoji } = await slackManager?.getStatus() || {};
+    if (statusEmoji !== ":musical_note:") return;
+    await slackManager?.clearStatus();
+  } catch (error) {
+    console.error("Error clearing Slack status:", error);
+    throw error;
+  }
 }
 
 // This must be last to ensure it doesn't interfere with other routes
@@ -217,7 +264,9 @@ server.listen(port, () => {
   console.log(`Server is running on ${serverUrl}`);
 
   // Open the browser automatically
-  open(serverUrl).catch((error) => {
-    console.log("Could not automatically open browser:", error.message);
-  });
+  if (process.env.NODE_ENV !== "development") {
+    open(serverUrl).catch((error) => {
+      console.log("Could not automatically open browser:", error.message);
+    });
+  }
 });

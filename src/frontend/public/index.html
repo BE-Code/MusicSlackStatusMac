@@ -24,7 +24,8 @@
         <!-- Step 1: Create App -->
         <div id="step-1" class="setup-step">
           <p>Go to Slack <strong><a href="https://api.slack.com/apps" target="_blank">App Creation</a></strong> >
-            <strong>Create an App</strong> > <strong>From scratch</strong></p>
+            <strong>Create an App</strong> > <strong>From scratch</strong>
+          </p>
           <div class="navigation-buttons">
             <button class="next-step">Next &rarr;</button>
           </div>
@@ -68,7 +69,8 @@
         <div id="step-4" class="setup-step hidden">
           <p>Go to <a href="#" class="oauth-dynamic-link" target="_blank"><strong>OAuth & Permissions</strong></a> >
             Scroll to <strong>Redirect URLs</strong> > Add <code>https://localhost:5001/oauth/redirect</code> >
-            <strong>Save URLs</strong></p>
+            <strong>Save URLs</strong>
+          </p>
           <div class="navigation-buttons">
             <button class="prev-step">&larr; Previous</button>
             <button class="next-step">Next &rarr;</button>
@@ -105,13 +107,30 @@
       <div class="now-playing-widget">
         <div class="record-container">
           <div id="record" class="record">
-            <img id="album-art" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Album Art">
+            <img id="album-art" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+              alt="Album Art">
             <div class="record-hole"></div>
           </div>
         </div>
         <div class="track-info">
           <p id="track-title" class="track-title"></p>
           <p id="artist-name" class="artist-name"></p>
+        </div>
+      </div>
+
+      <!-- Settings Section -->
+      <div class="settings-section">
+        <button id="settings-toggle" class="settings-toggle">
+          Settings <span id="settings-arrow" class="settings-arrow">▼</span>
+        </button>
+        <div id="settings-content" class="settings-content">
+          <div class="setting-item">
+            <span class="setting-text">Sync Slack Status</span>
+            <div class="toggle-switch">
+              <input type="checkbox" id="sync-slack-status" class="toggle-input" checked>
+              <label for="sync-slack-status" class="toggle-label"></label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
