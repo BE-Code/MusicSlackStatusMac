@@ -106,7 +106,8 @@ function updateNowPlayingUI(data: NowPlayingData | null) {
     if (data.artworkData && data.artworkMimeType) {
       albumArt.src = `data:${data.artworkMimeType};base64,${data.artworkData}`;
     } else {
-      albumArt.src = ''; // Or a fallback image
+      // Set a transparent 1x1 pixel image to prevent broken image icon
+      albumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
     trackTitle.textContent = data.title;
     artistName.textContent = data.artist;
