@@ -4,17 +4,21 @@ This web application syncs your currently playing music to your Slack status. Th
 
 ## Installation
 
+If you don't have Yarn installed:
+```bash
+./scripts/full-install.sh
+```
+
+If you already have Yarn:
+```bash
+yarn full-install
+```
+
+## Development Setup
+
 ```bash
 yarn setup
+yarn dev
 ```
 
-## Running the Application
-
-```bash
-yarn start
-```
-
-The application will be running at `https://localhost:5001`. Open this URL in your browser to begin.
-
-> [!NOTE]
-> If running for development use `yarn dev`
+The application will be running at `https://localhost:5001`.

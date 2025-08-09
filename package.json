@@ -4,6 +4,7 @@
   "main": "compiled/backend/index.js",
   "license": "MIT",
   "scripts": {
+    "full-install": "yarn setup && yarn install-startup",
     "setup": "scripts/setup.sh && yarn install && yarn build",
     "clean": "rm -rf compiled",
     "copy-assets": "cp -r certs compiled/ && cp -r src/frontend/public compiled/",
