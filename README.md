@@ -14,6 +14,9 @@ If you already have Yarn:
 yarn full-install
 ```
 
+> [!NOTE]
+> To uninstall: `yarn uninstall-startup`
+
 ## Development Setup
 
 ```bash
