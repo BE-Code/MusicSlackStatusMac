@@ -1,5 +1,5 @@
 {
-  "name": "slack-status-updater",
+  "name": "music-slack-status",
   "version": "1.0.0",
   "main": "compiled/backend/index.js",
   "license": "MIT",
@@ -11,7 +11,9 @@
     "build:frontend": "tsc -p tsconfig.frontend.json",
     "build": "yarn clean && yarn build:backend && yarn build:frontend && yarn copy-assets",
     "start": "node compiled/backend/index.js",
-    "dev": "NODE_ENV=development nodemon"
+    "dev": "NODE_ENV=development nodemon",
+    "install-startup": "scripts/install-startup.sh",
+    "uninstall-startup": "scripts/uninstall-startup.sh"
   },
   "dependencies": {
     "@slack/web-api": "^7.9.3",
