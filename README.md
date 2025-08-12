@@ -2,6 +2,8 @@
 
 This web application syncs your currently playing music to your Slack status. The first time you run it, it will guide you through a one-time setup process in your browser.
 
+![UI Screenshot](./UI-Screenshot.png)
+
 ## Installation
 
 ### 1. Get the code (non git users)
