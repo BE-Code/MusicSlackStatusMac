@@ -15,6 +15,7 @@ interface NowPlayingData {
 
 interface Settings {
   syncSlackStatus: boolean;
+  nsfwFilter: boolean;
 }
 
 export {

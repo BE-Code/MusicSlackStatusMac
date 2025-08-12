@@ -138,6 +138,25 @@ function updateOauthLink(appId: string) {
   });
 }
 
+async function updateSettings(partial: Partial<Settings>): Promise<boolean> {
+  try {
+    const response = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(partial)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save settings');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    return false;
+  }
+}
+
 // Setup Wizard Logic
 const setupSteps = document.querySelectorAll('.setup-step');
 const nextButtons = document.querySelectorAll('.next-step');
@@ -220,6 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const settingsContent = document.getElementById('settings-content');
   const settingsArrow = document.getElementById('settings-arrow');
   const syncSlackStatusCheckbox = document.getElementById('sync-slack-status') as HTMLInputElement;
+  const nsfwFilterCheckbox = document.getElementById('nsfw-filter') as HTMLInputElement;
 
   if (settingsToggle && settingsContent && settingsArrow) {
     settingsToggle.addEventListener('click', () => {
@@ -241,34 +261,45 @@ document.addEventListener('DOMContentLoaded', async () => {
       const response = await fetch('/api/settings');
       const settings: Settings = await response.json();
       syncSlackStatusCheckbox.checked = settings.syncSlackStatus;
+      if (nsfwFilterCheckbox) {
+        nsfwFilterCheckbox.checked = settings.nsfwFilter;
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
       // Fallback to default if API fails
       syncSlackStatusCheckbox.checked = true;
+      if (nsfwFilterCheckbox) {
+        nsfwFilterCheckbox.checked = true;
+      }
     }
 
     // Save setting when changed
     syncSlackStatusCheckbox.addEventListener('change', async () => {
-      const newSettings: Settings = {
+      const newSettings: Partial<Settings> = {
         syncSlackStatus: syncSlackStatusCheckbox.checked
       };
 
-      try {
-        const response = await fetch('/api/settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newSettings)
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to save settings');
-        }
-
-        console.log('Settings saved:', newSettings);
-      } catch (error) {
-        console.error('Error saving settings:', error);
-        // Revert checkbox on error
+      const ok = await updateSettings(newSettings);
+      if (!ok) {
         syncSlackStatusCheckbox.checked = !syncSlackStatusCheckbox.checked;
+      } else {
+        console.log('Settings saved:', newSettings);
+      }
+    });
+  }
+
+  if (nsfwFilterCheckbox) {
+    // Save NSFW filter setting when changed
+    nsfwFilterCheckbox.addEventListener('change', async () => {
+      const newSettings: Partial<Settings> = {
+        nsfwFilter: nsfwFilterCheckbox.checked
+      };
+
+      const ok = await updateSettings(newSettings);
+      if (!ok) {
+        nsfwFilterCheckbox.checked = !nsfwFilterCheckbox.checked;
+      } else {
+        console.log('Settings saved:', newSettings);
       }
     });
   }

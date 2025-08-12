@@ -8,8 +8,14 @@ import https from "https";
 import open from "open";
 import { WebSocketServer, WebSocket } from "ws";
 import { NowPlayingManager } from "./now-playing/now-playing-manager";
-import { NowPlayingEventType, Settings } from "../shared/types";
+import { NowPlayingData, NowPlayingEventType, Settings } from "../shared/types";
 import { SlackManager } from "./slack-manager";
+const FilterApi = Function("return import(\"bad-words\")")();
+let nsfwFilter: any;
+(async () => {
+  const { Filter } = await FilterApi;
+  nsfwFilter = new Filter();
+})();
 
 dotenv.config();
 
@@ -24,7 +30,8 @@ const SLACK_REDIRECT_URI = `https://localhost:${port}/oauth/redirect`;
 let userSlackToken = process.env.SLACK_API_TOKEN;
 
 let settings: Settings = {
-  syncSlackStatus: process.env.SYNC_SLACK_STATUS !== 'false' // Default to true
+  syncSlackStatus: process.env.SYNC_SLACK_STATUS !== 'false', // Default to true
+  nsfwFilter: process.env.NSFW_FILTER !== 'false', // Default to true
 };
 
 const saveEnvFile = () => {
@@ -34,6 +41,7 @@ const saveEnvFile = () => {
   if (SLACK_CLIENT_SECRET) envContent += `SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}\n`;
   if (userSlackToken) envContent += `SLACK_API_TOKEN=${userSlackToken}\n`;
   envContent += `SYNC_SLACK_STATUS=${settings.syncSlackStatus}\n`;
+  envContent += `NSFW_FILTER=${settings.nsfwFilter}\n`;
   fs.writeFileSync('.env', envContent);
 };
 
@@ -135,23 +143,47 @@ app.get("/api/settings", (req: Request, res: Response) => {
 });
 
 app.post("/api/settings", (req: Request, res: Response) => {
-  const newSettings: Settings = req.body;
+  const updates: Partial<Settings> = req.body || {};
+  const oldSettings = settings;
 
-  if (typeof newSettings.syncSlackStatus !== 'boolean') {
+  // Reject empty payloads
+  if (!updates || Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: "No settings provided" });
+  }
+
+  // Validate only provided keys
+  if (
+    ("syncSlackStatus" in updates && typeof updates.syncSlackStatus !== "boolean") ||
+    ("nsfwFilter" in updates && typeof updates.nsfwFilter !== "boolean")
+  ) {
     return res.status(400).json({ error: "Invalid settings format" });
   }
 
-  if (!newSettings.syncSlackStatus && settings.syncSlackStatus) {
-    clearStatus();
-  } else if (newSettings.syncSlackStatus && !settings.syncSlackStatus) {
-    const { title, artist } = nowPlayingManager.currentNowPlayingData || {};
-    if (title && artist) {
-      updateStatusSong(title, artist);
+  if ("nsfwFilter" in updates && !nsfwFilter) {
+    return res.status(500).json({ error: "NSFW filter not initialized" });
+  }
+
+  settings = { ...settings, ...updates };
+  saveEnvFile();
+
+  if ("nsfwFilter" in updates) {
+    const currentNowPlayingData = nowPlayingManager.currentNowPlayingData;
+    if (currentNowPlayingData) {
+      updateStatusSong(currentNowPlayingData.title, currentNowPlayingData.artist);
+      broadcastNowPlayingUpdate(currentNowPlayingData);
     }
   }
 
-  settings = { ...newSettings };
-  saveEnvFile();
+  if ("syncSlackStatus" in updates) {
+    if (!settings.syncSlackStatus) {
+      clearStatus();
+    } else if (settings.syncSlackStatus) {
+      const { title, artist } = nowPlayingManager.currentNowPlayingData || {};
+      if (title && artist) {
+        updateStatusSong(title, artist);
+      }
+    }
+  }
 
   res.json({ success: true, settings });
 });
@@ -171,8 +203,16 @@ const updateStatus = async (status: string) => {
   }
 }
 
+const applyNSFWFilter = (text: string): string => {
+  if (!settings.nsfwFilter) return text;
+  if (!nsfwFilter) return text;
+  return nsfwFilter.clean(text);
+};
+
 const updateStatusSong = (title: string, artist: string) => {
-  updateStatus(`${title} - ${artist}`);
+  const filteredTitle = applyNSFWFilter(title);
+  const filteredArtist = applyNSFWFilter(artist);
+  updateStatus(`${filteredTitle} - ${filteredArtist}`);
 }
 
 const clearStatus = async () => {
@@ -210,12 +250,18 @@ const broadcast = (data: any) => {
   });
 }
 
+const broadcastNowPlayingUpdate = (nowPlayingData: NowPlayingData) => {
+  nowPlayingData.title = applyNSFWFilter(nowPlayingData.title);
+  nowPlayingData.artist = applyNSFWFilter(nowPlayingData.artist);
+  broadcast({
+    type: NowPlayingEventType.NOW_PLAYING_UPDATE,
+    data: nowPlayingData
+  });
+}
+
 const nowPlayingManager = new NowPlayingManager(
   (nowPlayingData) => {
-    broadcast({
-      type: NowPlayingEventType.NOW_PLAYING_UPDATE,
-      data: nowPlayingData
-    });
+    broadcastNowPlayingUpdate(nowPlayingData);
     updateStatusSong(nowPlayingData.title, nowPlayingData.artist);
   },
   () => broadcast({ type: NowPlayingEventType.NOW_PLAYING_PAUSED }),
