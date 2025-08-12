@@ -20,7 +20,6 @@ This web application syncs your currently playing music to your Slack status. Th
     ```bash
     ./scripts/full-install.sh
     ```
-
 - If you do have Yarn:
     ```bash
     yarn full-install
