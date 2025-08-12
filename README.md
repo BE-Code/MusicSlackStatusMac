@@ -9,7 +9,7 @@ This web application syncs your currently playing music to your Slack status. Th
 ### 1. Get the code (non git users)
 
 - [Download the repository](https://github.com/BE-Code/MusicSlackStatusMac/archive/refs/heads/main.zip) as a ZIP from GitHub
-- Open Downloads in finder and double click the zip file
+- Open Downloads in finder and double-click the zip file to extract it
 - Open a terminal and run
     ```
     cd ~/Downloads/MusicSlackStatusMac-main
